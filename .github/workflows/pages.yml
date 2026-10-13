@@ -9,6 +9,9 @@ concurrency: {group: pages, cancel-in-progress: true}
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+      AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
     environment: {name: github-pages, url: '${{ steps.d.outputs.page_url }}'}
     steps:
       - uses: actions/checkout@v4
@@ -17,14 +20,14 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: audio-cache
-          key: audio-v1-${{ hashFiles('www/index.html') }}
-          restore-keys: audio-v1-
+          key: audio-${{ env.AZURE_SPEECH_KEY != '' && 'azure' || 'piper' }}-v1-${{ hashFiles('www/index.html') }}
+          restore-keys: audio-${{ env.AZURE_SPEECH_KEY != '' && 'azure' || 'piper' }}-v1-
       - name: Sesleri üret (Piper)
         continue-on-error: true
         run: |
           set -o pipefail
-          which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
-          (pip install sherpa-onnx numpy && node tools/extract.js && python tools/gen_audio.py) 2>&1 | tee audio_report.txt
+          [ -n "$AZURE_SPEECH_KEY" ] || which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          (([ -n "$AZURE_SPEECH_KEY" ] || pip install sherpa-onnx numpy) && node tools/extract.js && python tools/gen_audio.py) 2>&1 | tee audio_report.txt
       - name: Raporu repoya yaz
         if: always()
         run: |

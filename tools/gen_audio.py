@@ -1,7 +1,11 @@
 """Seslendirme: Piper (VITS) sesleri, sherpa-onnx ile. Her metin için kadın (-f) ve erkek (-m) mp3 üretir."""
-import os, sys, json, glob, hashlib, tarfile, subprocess, urllib.request, shutil
-import numpy as np
-import sherpa_onnx
+import os, sys, json, glob, hashlib, tarfile, subprocess, urllib.request, urllib.error, shutil
+import time, html
+AZ_KEY=os.environ.get('AZURE_SPEECH_KEY','').strip(); AZ_REGION=os.environ.get('AZURE_SPEECH_REGION','').strip()
+AZURE=bool(AZ_KEY and AZ_REGION)
+if not AZURE:
+    import numpy as np
+    import sherpa_onnx
 
 REL = "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/"
 EN = {"f": "vits-piper-en_US-amy-medium", "m": "vits-piper-en_US-ryan-medium"}
@@ -49,30 +53,53 @@ def to_mp3(x, sr, path, shift=1.0):
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-f", "s16le", "-ar", str(sr), "-ac", "1", "-i", "-"] + flt + ["-ac", "1", "-b:a", "40k", path],
                    input=pcm, check=True)
 
-# --- Türkçe sesleri tanı: hangisi kadın, hangisi erkek? ---
-probe = "Merhaba, bugün hava çok güzel ve ben yeni bir şeyler öğreniyorum."
-tr_models = {}
-tr_f0 = {}
-for n in TR_CANDIDATES:
-    try:
-        t = load(n); x, sr = synth(t, probe); tr_models[n] = t; tr_f0[n] = f0(x, sr)
-        print(f"TR ses {n}: F0 ~ {tr_f0[n]:.0f} Hz", flush=True)
-    except Exception as e:
-        print("TR ses yüklenemedi", n, e, flush=True)
-if not tr_f0: sys.exit("Türkçe ses yok")
-fem = max(tr_f0, key=tr_f0.get); mal = min(tr_f0, key=tr_f0.get)
-tr_shift = 1.0
-if tr_f0[fem] < 165:
-    tr_shift = 1.26
-    print(f"UYARI: Türkçe kadın sesi bulunamadı; {fem} sesi yükseltilerek kadın sesi yapılıyor.", flush=True)
-    mal = min(tr_f0, key=tr_f0.get)
-    if mal == fem and len(tr_f0) > 1: mal = [k for k in tr_f0 if k != fem][0]
-print("TR kadın:", fem, "TR erkek:", mal, flush=True)
-TR = {"f": (tr_models[fem], tr_shift), "m": (tr_models[mal], 1.0)}
-ENM = {v: (load(EN[v]), 1.0) for v in ("f", "m")}
-for v in ("f", "m"):
-    x, sr = synth(ENM[v][0], "Hello, this is a test of the English voice.")
-    print(f"EN {v} F0 ~ {f0(x, sr):.0f} Hz", flush=True)
+if not AZURE:
+    # --- Türkçe sesleri tanı: hangisi kadın, hangisi erkek? ---
+    probe = "Merhaba, bugün hava çok güzel ve ben yeni bir şeyler öğreniyorum."
+    tr_models = {}
+    tr_f0 = {}
+    for n in TR_CANDIDATES:
+        try:
+            t = load(n); x, sr = synth(t, probe); tr_models[n] = t; tr_f0[n] = f0(x, sr)
+            print(f"TR ses {n}: F0 ~ {tr_f0[n]:.0f} Hz", flush=True)
+        except Exception as e:
+            print("TR ses yüklenemedi", n, e, flush=True)
+    if not tr_f0: sys.exit("Türkçe ses yok")
+    fem = max(tr_f0, key=tr_f0.get); mal = min(tr_f0, key=tr_f0.get)
+    tr_shift = 1.0
+    if tr_f0[fem] < 165:
+        tr_shift = 1.26
+        print(f"UYARI: Türkçe kadın sesi bulunamadı; {fem} sesi yükseltilerek kadın sesi yapılıyor.", flush=True)
+        mal = min(tr_f0, key=tr_f0.get)
+        if mal == fem and len(tr_f0) > 1: mal = [k for k in tr_f0 if k != fem][0]
+    print("TR kadın:", fem, "TR erkek:", mal, flush=True)
+    TR = {"f": (tr_models[fem], tr_shift), "m": (tr_models[mal], 1.0)}
+    ENM = {v: (load(EN[v]), 1.0) for v in ("f", "m")}
+    for v in ("f", "m"):
+        x, sr = synth(ENM[v][0], "Hello, this is a test of the English voice.")
+        print(f"EN {v} F0 ~ {f0(x, sr):.0f} Hz", flush=True)
+
+
+AZV = {("en", "f"): ("en-US", "en-US-AvaMultilingualNeural"), ("en", "m"): ("en-US", "en-US-AndrewMultilingualNeural"),
+       ("tr", "f"): ("tr-TR", "tr-TR-EmelNeural"), ("tr", "m"): ("tr-TR", "tr-TR-AhmetNeural")}
+def azure_mp3(lang, v, text, path):
+    loc, name = AZV[(lang, v)]
+    ssml = f"<speak version='1.0' xml:lang='{loc}'><voice name='{name}'><prosody rate='-8%'>{html.escape(text)}</prosody></voice></speak>"
+    req = urllib.request.Request(f"https://{AZ_REGION}.tts.speech.microsoft.com/cognitiveservices/v1", data=ssml.encode("utf-8"),
+        headers={"Ocp-Apim-Subscription-Key": AZ_KEY, "Content-Type": "application/ssml+xml",
+                 "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3", "User-Agent": "lexium"})
+    for k in range(5):
+        try:
+            data = urllib.request.urlopen(req, timeout=60).read()
+            if len(data) < 800: raise ValueError("boş ses")
+            open(path, "wb").write(data); return
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403): sys.exit(f"Azure yetki hatası {e.code}: anahtar/bölge yanlış")
+            time.sleep(2 * (k + 1))
+        except Exception:
+            time.sleep(2 * (k + 1))
+    raise RuntimeError("Azure başarısız")
+if AZURE: print("Motor: Azure Neural", AZ_REGION, flush=True)
 
 texts = json.load(open("tools/texts.json", encoding="utf-8"))
 index = {}; made = 0
@@ -83,10 +110,14 @@ for lang, text in texts:
         p = f"{CACHE}/{h}-{v}.mp3"
         if not os.path.exists(p):
             try:
-                tts, shift = (ENM if lang == "en" else TR)[v]
-                x, sr = synth(tts, text)
-                if len(x) < sr * 0.1: raise ValueError("boş ses")
-                to_mp3(x, sr, p, shift); made += 1
+                if AZURE:
+                    azure_mp3(lang, v, text, p)
+                else:
+                    tts, shift = (ENM if lang == "en" else TR)[v]
+                    x, sr = synth(tts, text)
+                    if len(x) < sr * 0.1: raise ValueError("boş ses")
+                    to_mp3(x, sr, p, shift)
+                made += 1
             except Exception as e:
                 print("HATA", lang, text, e, flush=True); ok = False
     if ok: index[f"{lang}|{text}"] = h
