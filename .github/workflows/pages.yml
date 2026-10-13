@@ -2,7 +2,7 @@ name: Yayın (güncelleme)
 on:
   push:
     branches: [main]
-    paths: ['www/**', '.github/workflows/pages.yml']
+    paths: ['www/**', 'tools/gen_audio.py', 'tools/extract.js', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions: {contents: read, pages: write, id-token: write}
 concurrency: {group: pages, cancel-in-progress: true}
@@ -12,6 +12,19 @@ jobs:
     environment: {name: github-pages, url: '${{ steps.d.outputs.page_url }}'}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - uses: actions/cache@v4
+        with:
+          path: audio-cache
+          key: audio-v1-${{ hashFiles('www/index.html') }}
+          restore-keys: audio-v1-
+      - name: Sesleri üret (Piper)
+        continue-on-error: true
+        run: |
+          pip install sherpa-onnx numpy
+          node tools/extract.js
+          python tools/gen_audio.py
       - uses: actions/upload-pages-artifact@v3
         with: {path: www}
       - id: d

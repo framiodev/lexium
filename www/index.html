@@ -108,6 +108,7 @@ table.tb{border-collapse:collapse;width:100%;font-size:.92rem}
 .env.done{border-left-color:var(--ok)}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label,.lbl{font-weight:600;font-size:.9rem}
+select{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 12px;font:inherit}
 input[type=date]{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 12px;font:inherit}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -514,13 +515,31 @@ function pickVoice(lang){
   for(var i=0;i<pre.length;i++){ var f=voices.find(function(v){return v.lang===pre[i];}); if(f) return f; }
   return voices.find(function(v){return v.lang.toLowerCase().indexOf(lang)===0;})||null;
 }
-function say(text,lang,rate,pitch){
+var AIDX=null, AURL={}, CUR=null, SAYT=0;
+try{ fetch('audio/index.json').then(function(r){return r.ok?r.json():null;}).then(function(j){AIDX=j;}).catch(function(){}); }catch(e){}
+function vkey(v){ return v==='m'?'m':(v==='f'?'f':(S.settings.voice==='m'?'m':'f')); }
+function clipUrl(h,v){
+  var k=h+'-'+v; if(AURL[k]) return Promise.resolve(AURL[k]);
+  return fetch('audio/'+k+'.mp3').then(function(r){ if(!r.ok) throw 0; return r.blob(); }).then(function(b){ AURL[k]=URL.createObjectURL(b); return AURL[k]; });
+}
+function sayClip(text,lang,rate,v){
+  var h=AIDX&&AIDX[lang+'|'+text]; if(!h) return Promise.reject();
+  return clipUrl(h,vkey(v)).then(function(u){
+    return new Promise(function(res,rej){
+      var a=new Audio(u); CUR=a; a.preservesPitch=true; a.playbackRate=Math.min(2,Math.max(0.5,rate||1));
+      var done=false; a.onended=function(){ if(!done){done=true;res();} };
+      a.onerror=function(){ if(!done){done=true;rej();} };
+      var pr=a.play(); if(pr&&pr.catch) pr.catch(function(){ if(!done){done=true;rej();} });
+    });
+  });
+}
+function sayTTS(text,lang,rate){
   return new Promise(function(res){
     if(!('speechSynthesis' in window)){res();return;}
     var u=new SpeechSynthesisUtterance(text);
     u.lang=lang==='en'?'en-US':'tr-TR';
     var v=pickVoice(lang); if(v){u.voice=v;u.lang=v.lang;}
-    u.rate=rate||S.settings.rate; if(pitch) u.pitch=pitch;
+    u.rate=rate||S.settings.rate;
     var done=false, to;
     var fin=function(){ if(!done){done=true;clearTimeout(to);res();} };
     u.onend=fin; u.onerror=fin;
@@ -528,7 +547,10 @@ function say(text,lang,rate,pitch){
     setTimeout(function(){ try{speechSynthesis.speak(u);}catch(e){fin();} },40);
   });
 }
-function stopSay(){ try{speechSynthesis.cancel();}catch(e){} }
+function say(text,lang,rate,v){
+  return sayClip(text,lang,rate||S.settings.rate,v).catch(function(){ return sayTTS(text,lang,rate); });
+}
+function stopSay(){ try{ if(CUR){CUR.onended=null;CUR.onerror=null;CUR.pause();CUR=null;} }catch(e){} try{speechSynthesis.cancel();}catch(e){} }
 function play(text,slow){ stopSay(); setTimeout(function(){say(text,'en',slow?0.6:S.settings.rate);},60); }
 function toast(t){ var el=$('#toast'); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(function(){el.hidden=true;},2400); }
 
@@ -790,9 +812,10 @@ function rProg(){
 /* ---------- Ayarlar ---------- */
 function openSettings(){
   var ev=pickVoice('en'), tv=pickVoice('tr');
-  var info_=ev?'İngilizce ses: '+esc(ev.name)+(tv?'. Türkçe ses de var.':'. Türkçe ses bulunamadı, Akış modunda çeviriler okunmayabilir.'):'İngilizce ses bulunamadı. Telefonun metin okuma ayarlarından İngilizce (ABD) ses verisini indir.';
+  var info_=AIDX?'Sesler uygulamanın içinde hazır (kadın ve erkek, Türkçe ve İngilizce).':ev?'İngilizce ses: '+esc(ev.name)+(tv?'. Türkçe ses de var.':'. Türkçe ses bulunamadı, Akış modunda çeviriler okunmayabilir.'):'İngilizce ses bulunamadı. Telefonun metin okuma ayarlarından İngilizce (ABD) ses verisini indir.';
   openSheet(sheetTop('Ayarlar')+'<div class="stage">'+
    '<div class="field"><label for="sd">Programın 1. günü</label><input type="date" id="sd" value="'+esc(S.start)+'"><p class="note">Tarihi değiştirirsen günler buna göre kayar. İlerlemen silinmez.</p><button class="btn ghost" data-act="startnow">Bugünü Gün 1 yap</button></div>'+
+   '<div class="field"><label for="vc">Ses</label><select id="vc"><option value="f"'+(S.settings.voice!=='m'?' selected':'')+'>Kadın sesi</option><option value="m"'+(S.settings.voice==='m'?' selected':'')+'>Erkek sesi</option></select><p class="note">Diyaloglarda iki konuşmacı farklı ses kullanır.</p></div>'+
    '<div class="field"><label for="rt">Konuşma hızı: <span id="rtv">'+S.settings.rate.toFixed(2)+'×</span></label><input type="range" id="rt" min="0.5" max="1.1" step="0.05" value="'+S.settings.rate+'"><button class="btn ghost" data-act="voicetest">Sesi dene</button><p class="note">'+info_+'</p></div>'+
    '<div class="field"><label><input type="checkbox" id="okc"'+(S.settings.ok?' checked':'')+'> Türkçe okunuşu göster (1. ve 2. hafta)</label></div>'+
    '<h4>Telefonda her an yanında</h4><ol class="how"><li>Bu sayfayı Chrome\'da açabiliyorsan menüden (⋮) "Ana ekrana ekle" de. Uygulama gibi tek dokunuşla açılır.</li><li>Gün içine 3 alarm koy: sabah Isınma, öğle Hızlı 3 dk, akşam günün dersi.</li><li>Yolda, ev işinde veya sıradayken Akış sekmesini aç ve cümleleri duy.</li><li>Telefonunun dilini İngilizce yapmayı 6. haftanın görevinde dene. Gün boyu İngilizceyle karşılaşmak, çalışma saatinin dışında kalan en güçlü araçtır.</li></ol>'+
@@ -802,7 +825,7 @@ function openSettings(){
 
 /* ---------- Eylemler ---------- */
 function toTop(){ window.scrollTo(0,0); }
-function startSeq(lines){ var t=++SEQ.tok; stopSay(); (async function(){ for(var i=0;i<lines.length;i++){ if(SEQ.tok!==t) return; await say(lines[i].t,'en',lines[i].r,lines[i].p); await wait(450); } })(); }
+function startSeq(lines){ var t=++SEQ.tok; stopSay(); (async function(){ for(var i=0;i<lines.length;i++){ if(SEQ.tok!==t) return; await say(lines[i].t,'en',lines[i].r,lines[i].v); await wait(450); } })(); }
 var ACT={
   tab:function(d){ if(UI.tab==='flow') flowStop(); UI.tab=d.t; render(); toTop(); },
   day:function(d){ UI.day=Math.min(TOTAL,Math.max(1,UI.day+Number(d.d))); UI.open=firstOpen(UI.day); render(); },
@@ -814,8 +837,8 @@ var ACT={
   play:function(d){ SEQ.tok++; play(d.t); },
   slow:function(d){ SEQ.tok++; play(d.t,true); },
   playday:function(d){ var I=info(Number(d.n)); startSeq(cardsOf(I.wi,I.di).map(function(c){return {t:c.en};})); },
-  playdlg:function(d){ var I=info(Number(d.n)), who={}, k=0; startSeq(I.w.dlg.map(function(l){ if(!(l[0] in who)) who[l[0]]=k++; return {t:l[1],p:who[l[0]]%2?0.8:1.05}; })); },
-  slowdlg:function(d){ var I=info(Number(d.n)), who={}, k=0; startSeq(I.w.dlg.map(function(l){ if(!(l[0] in who)) who[l[0]]=k++; return {t:l[1],r:0.65,p:who[l[0]]%2?0.8:1.05}; })); },
+  playdlg:function(d){ var I=info(Number(d.n)), who={}, k=0; startSeq(I.w.dlg.map(function(l){ if(!(l[0] in who)) who[l[0]]=k++; return {t:l[1],v:who[l[0]]%2?'m':'f'}; })); },
+  slowdlg:function(d){ var I=info(Number(d.n)), who={}, k=0; startSeq(I.w.dlg.map(function(l){ if(!(l[0] in who)) who[l[0]]=k++; return {t:l[1],r:0.65,v:who[l[0]]%2?'m':'f'}; })); },
   learn:function(d){ var n=Number(d.n), c=addCards(n); setStep(n,2,true); toast(c?c+' kart eklendi':'Kartlar zaten ekli'); UI.open=firstOpen(n); render(); },
   timer:function(){ if(TMR){clearInterval(TMR);TMR=null;} var s=120; var e=$('#tm'); if(e) e.textContent='2:00'; TMR=setInterval(function(){ s--; var el=$('#tm'); if(!el){clearInterval(TMR);TMR=null;return;} if(s<=0){clearInterval(TMR);TMR=null;el.textContent='Süre doldu';return;} el.textContent=Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60); },1000); },
   rdue:function(){ openReview(dueIds().slice(0,40),'Tekrar','due'); },
@@ -835,7 +858,7 @@ var ACT={
   fset:function(d){ var was=F.run; if(was) flowStop(); F[d.k]=d.v; F.idx=0; render(); if(was) flowRun(); },
   settings:function(){ openSettings(); },
   startnow:function(){ var d=new Date(); S.start=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); save(); UI.day=curDay(); UI.open=firstOpen(UI.day); openSettings(); toast('Bugün Gün 1 oldu'); },
-  voicetest:function(){ say('Hello! This is how the app will sound.','en',S.settings.rate); },
+  voicetest:function(){ stopSay(); (async function(){ await say('Hello! This is how the app will sound.','en',S.settings.rate); await say('Merhaba! Uygulama böyle konuşacak.','tr',1); })(); },
   reset1:function(){ RESET=true; openSettings(); },
   reset0:function(){ RESET=false; openSettings(); },
   reset2:function(){ S.steps={};S.srs={};S.q=[];S.env={};save(); RESET=false; UI.day=curDay(); UI.open=firstOpen(UI.day); closeSheet(); toast('İlerleme sıfırlandı'); },
@@ -850,6 +873,7 @@ document.addEventListener('input',function(e){
 document.addEventListener('change',function(e){
   var t=e.target;
   if(t.id==='sd'&&/^\d{4}-\d{2}-\d{2}$/.test(t.value)){ S.start=t.value; save(); UI.day=curDay(); UI.open=firstOpen(UI.day); toast('Başlangıç tarihi güncellendi'); }
+  if(t.id==='vc'){ S.settings.voice=t.value; save(); }
   if(t.id==='okc'){ S.settings.ok=t.checked; save(); }
 });
 document.addEventListener('visibilitychange',function(){ if(document.hidden&&F.run) flowStop(); });
