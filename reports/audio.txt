@@ -1,80 +1,30 @@
-HATA en come, came, come [Errno 2] No such file or directory: 'ffmpeg'
-HATA en come, came, come [Errno 2] No such file or directory: 'ffmpeg'
-HATA en do, did, done [Errno 2] No such file or directory: 'ffmpeg'
-HATA en do, did, done [Errno 2] No such file or directory: 'ffmpeg'
-HATA en drink, drank, drunk [Errno 2] No such file or directory: 'ffmpeg'
-HATA en drink, drank, drunk [Errno 2] No such file or directory: 'ffmpeg'
-HATA en drive, drove, driven [Errno 2] No such file or directory: 'ffmpeg'
-HATA en drive, drove, driven [Errno 2] No such file or directory: 'ffmpeg'
-HATA en eat, ate, eaten [Errno 2] No such file or directory: 'ffmpeg'
-HATA en eat, ate, eaten [Errno 2] No such file or directory: 'ffmpeg'
-HATA en fall, fell, fallen [Errno 2] No such file or directory: 'ffmpeg'
-HATA en fall, fell, fallen [Errno 2] No such file or directory: 'ffmpeg'
-HATA en feel, felt, felt [Errno 2] No such file or directory: 'ffmpeg'
-HATA en feel, felt, felt [Errno 2] No such file or directory: 'ffmpeg'
-HATA en find, found, found [Errno 2] No such file or directory: 'ffmpeg'
-HATA en find, found, found [Errno 2] No such file or directory: 'ffmpeg'
-HATA en forget, forgot, forgotten [Errno 2] No such file or directory: 'ffmpeg'
-HATA en forget, forgot, forgotten [Errno 2] No such file or directory: 'ffmpeg'
-HATA en get, got, got [Errno 2] No such file or directory: 'ffmpeg'
-HATA en get, got, got [Errno 2] No such file or directory: 'ffmpeg'
-HATA en give, gave, given [Errno 2] No such file or directory: 'ffmpeg'
-HATA en give, gave, given [Errno 2] No such file or directory: 'ffmpeg'
-HATA en go, went, gone, been [Errno 2] No such file or directory: 'ffmpeg'
-HATA en go, went, gone, been [Errno 2] No such file or directory: 'ffmpeg'
-HATA en have, had, had [Errno 2] No such file or directory: 'ffmpeg'
-HATA en have, had, had [Errno 2] No such file or directory: 'ffmpeg'
-HATA en hear, heard, heard [Errno 2] No such file or directory: 'ffmpeg'
-HATA en hear, heard, heard [Errno 2] No such file or directory: 'ffmpeg'
-HATA en know, knew, known [Errno 2] No such file or directory: 'ffmpeg'
-HATA en know, knew, known [Errno 2] No such file or directory: 'ffmpeg'
-HATA en leave, left, left [Errno 2] No such file or directory: 'ffmpeg'
-HATA en leave, left, left [Errno 2] No such file or directory: 'ffmpeg'
-HATA en lose, lost, lost [Errno 2] No such file or directory: 'ffmpeg'
-HATA en lose, lost, lost [Errno 2] No such file or directory: 'ffmpeg'
-HATA en make, made, made [Errno 2] No such file or directory: 'ffmpeg'
-HATA en make, made, made [Errno 2] No such file or directory: 'ffmpeg'
-HATA en meet, met, met [Errno 2] No such file or directory: 'ffmpeg'
-HATA en meet, met, met [Errno 2] No such file or directory: 'ffmpeg'
-HATA en pay, paid, paid [Errno 2] No such file or directory: 'ffmpeg'
-HATA en pay, paid, paid [Errno 2] No such file or directory: 'ffmpeg'
-HATA en read, read, read [Errno 2] No such file or directory: 'ffmpeg'
-HATA en read, read, read [Errno 2] No such file or directory: 'ffmpeg'
-HATA en run, ran, run [Errno 2] No such file or directory: 'ffmpeg'
-HATA en run, ran, run [Errno 2] No such file or directory: 'ffmpeg'
-HATA en say, said, said [Errno 2] No such file or directory: 'ffmpeg'
-HATA en say, said, said [Errno 2] No such file or directory: 'ffmpeg'
-HATA en see, saw, seen [Errno 2] No such file or directory: 'ffmpeg'
-HATA en see, saw, seen [Errno 2] No such file or directory: 'ffmpeg'
-HATA en sell, sold, sold [Errno 2] No such file or directory: 'ffmpeg'
-HATA en sell, sold, sold [Errno 2] No such file or directory: 'ffmpeg'
-HATA en send, sent, sent [Errno 2] No such file or directory: 'ffmpeg'
-HATA en send, sent, sent [Errno 2] No such file or directory: 'ffmpeg'
-HATA en sit, sat, sat [Errno 2] No such file or directory: 'ffmpeg'
-HATA en sit, sat, sat [Errno 2] No such file or directory: 'ffmpeg'
-HATA en sleep, slept, slept [Errno 2] No such file or directory: 'ffmpeg'
-HATA en sleep, slept, slept [Errno 2] No such file or directory: 'ffmpeg'
-HATA en speak, spoke, spoken [Errno 2] No such file or directory: 'ffmpeg'
-HATA en speak, spoke, spoken [Errno 2] No such file or directory: 'ffmpeg'
-HATA en take, took, taken [Errno 2] No such file or directory: 'ffmpeg'
-HATA en take, took, taken [Errno 2] No such file or directory: 'ffmpeg'
-HATA en teach, taught, taught [Errno 2] No such file or directory: 'ffmpeg'
-HATA en teach, taught, taught [Errno 2] No such file or directory: 'ffmpeg'
-HATA en tell, told, told [Errno 2] No such file or directory: 'ffmpeg'
-HATA en tell, told, told [Errno 2] No such file or directory: 'ffmpeg'
-HATA en think, thought, thought [Errno 2] No such file or directory: 'ffmpeg'
-HATA en think, thought, thought [Errno 2] No such file or directory: 'ffmpeg'
-HATA en understand, understood, understood [Errno 2] No such file or directory: 'ffmpeg'
-HATA en understand, understood, understood [Errno 2] No such file or directory: 'ffmpeg'
-HATA en wake, woke, woken [Errno 2] No such file or directory: 'ffmpeg'
-HATA en wake, woke, woken [Errno 2] No such file or directory: 'ffmpeg'
-HATA en wear, wore, worn [Errno 2] No such file or directory: 'ffmpeg'
-HATA en wear, wore, worn [Errno 2] No such file or directory: 'ffmpeg'
-HATA en write, wrote, written [Errno 2] No such file or directory: 'ffmpeg'
-HATA en write, wrote, written [Errno 2] No such file or directory: 'ffmpeg'
-HATA en Hello! This is how the app will sound. [Errno 2] No such file or directory: 'ffmpeg'
-HATA en Hello! This is how the app will sound. [Errno 2] No such file or directory: 'ffmpeg'
-HATA tr Merhaba! Uygulama böyle konuşacak. [Errno 2] No such file or directory: 'ffmpeg'
-HATA tr Merhaba! Uygulama böyle konuşacak. [Errno 2] No such file or directory: 'ffmpeg'
-üretilen: 0, toplam metin: 908, indekste: 0
-MB: 2e-06
+Collecting sherpa-onnx
+  Downloading sherpa_onnx-1.13.8-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (53 kB)
+Collecting numpy
+  Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting sherpa-onnx-core==1.13.8 (from sherpa-onnx)
+  Downloading sherpa_onnx_core-1.13.8-py3-none-manylinux2014_x86_64.whl.metadata (628 bytes)
+Downloading sherpa_onnx-1.13.8-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 34.8 MB/s  0:00:00
+Downloading sherpa_onnx_core-1.13.8-py3-none-manylinux2014_x86_64.whl (10.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 102.9 MB/s  0:00:00
+Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 120.1 MB/s  0:00:00
+Installing collected packages: sherpa-onnx-core, sherpa-onnx, numpy
+
+Successfully installed numpy-2.4.6 sherpa-onnx-1.13.8 sherpa-onnx-core-1.13.8
+metin sayisi 908
+indiriliyor vits-piper-tr_TR-dfki-medium
+TR ses vits-piper-tr_TR-dfki-medium: F0 ~ 106 Hz
+indiriliyor vits-piper-tr_TR-fahrettin-medium
+TR ses vits-piper-tr_TR-fahrettin-medium: F0 ~ 110 Hz
+indiriliyor vits-piper-tr_TR-fettah-medium
+TR ses vits-piper-tr_TR-fettah-medium: F0 ~ 188 Hz
+TR kadın: vits-piper-tr_TR-fettah-medium TR erkek: vits-piper-tr_TR-dfki-medium
+indiriliyor vits-piper-en_US-amy-medium
+indiriliyor vits-piper-en_US-ryan-medium
+EN f F0 ~ 196 Hz
+EN m F0 ~ 170 Hz
+üretilen: 1816, toplam metin: 908, indekste: 908
+MB: 14.510847
+0
