@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0B0E13"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Lexium</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tek sütunlu telefon uygulaması; altta sabit sekme çubuğu, üstte yapışkan başlık, dersler adım adım açılan liste.
+   Kimlik: film altyazısı. İngilizce cümleler koyu bir altyazı çubuğunda sarı harflerle görünür. */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --surface2:#E8ECF0; --line:#D3DAE1;
+  --fg:#10161C; --muted:#55636E;
+  --accent:#FFD23F; --on-accent:#1B1500; --accent-text:#7A5A00;
+  --ok:#1E8A58; --warn:#A8620A; --bad:#C23B47; --focus:#2563EB;
+  --sub-bg:#0B0E12; --sub-fg:#FFD23F;
+  --f-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1217; --surface:#151C23; --surface2:#1E2832; --line:#2A3540;
+    --fg:#E7ECF1; --muted:#97A5B1;
+    --accent-text:#FFD23F; --ok:#4CC38A; --warn:#F2A93B; --bad:#F0707A; --focus:#6CA8FF;
+    --sub-bg:#05070A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1217; --surface:#151C23; --surface2:#1E2832; --line:#2A3540;
+  --fg:#E7ECF1; --muted:#97A5B1;
+  --accent-text:#FFD23F; --ok:#4CC38A; --warn:#F2A93B; --bad:#F0707A; --focus:#6CA8FF;
+  --sub-bg:#05070A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.app{max-width:560px;margin-inline:auto;padding-inline:16px;padding-block:0 104px;min-height:100%}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding-block:12px 10px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.2rem;letter-spacing:-.01em}
+.brand i{font-style:normal;background:var(--sub-bg);color:var(--sub-fg);padding:1px 8px;border-radius:5px;margin-left:2px}
+.ibtn{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:0 10px;flex:none}
+.ibtn.sm{min-width:36px;height:36px;font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.ibtn svg{width:18px;height:18px;fill:currentColor}
+.ibtn.play{color:var(--accent-text)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs button{border:0;background:none;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.72rem;font-weight:600;color:var(--muted);border-top:3px solid transparent;min-width:0}
+.tabs button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs button[aria-selected="true"]{color:var(--accent-text);border-top-color:var(--accent)}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.015em}
+h1{font-size:1.85rem;line-height:1.1;font-weight:800}
+h2{font-size:1.3rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:800}
+h4{font-size:.78rem;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;font-weight:500}
+p{margin:0}
+.muted{color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:12px;padding-block:16px}
+.hero{display:flex;flex-direction:column;gap:10px;padding-block:18px 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.chip.hi{background:var(--sub-bg);color:var(--sub-fg);border-color:var(--sub-bg)}
+.bar{height:6px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.daynav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.daynav .mid{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);text-align:center;flex:1}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);font-weight:700}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--fg)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.step.on{border-color:var(--accent)}
+.step>button{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;background:none;text-align:left;min-height:56px}
+.num{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;flex:none;color:var(--muted)}
+.step.done .num{background:var(--ok);border-color:var(--ok);color:#fff}
+.num svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.st-t{font-weight:700;display:block}
+.st-d{font-size:.84rem;color:var(--muted);display:block}
+.st-m{margin-left:auto;font-family:var(--f-mono);font-size:.78rem;color:var(--muted);flex:none}
+.panel{padding:2px 14px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line)}
+.panel>*:first-child{margin-top:12px}
+ol.how{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.links{display:flex;flex-direction:column;gap:6px}
+.links a{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:var(--fg);text-decoration:none;background:var(--surface2);font-weight:600;font-size:.92rem}
+.links a span{color:var(--accent-text);font-family:var(--f-mono);font-size:.78rem;flex:none}
+.ph{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ph:last-child{border-bottom:0}
+.ph-t{flex:1;min-width:0}
+.en{font-family:var(--f-display);font-weight:600;font-size:1.05rem;line-height:1.25;overflow-wrap:anywhere}
+.tr{color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}
+.ok{font-family:var(--f-mono);font-size:.78rem;color:var(--accent-text);margin-top:2px;overflow-wrap:anywhere}
+.sub{background:var(--sub-bg);color:var(--sub-fg);border-radius:6px;padding:.55em .85em;font-family:var(--f-display);font-weight:600;font-size:clamp(1.3rem,6vw,1.75rem);line-height:1.25;text-align:center;text-wrap:balance;overflow-wrap:anywhere;border:1px solid var(--line)}
+.scroll{overflow-x:auto}
+table.tb{border-collapse:collapse;width:100%;font-size:.92rem}
+.tb th,.tb td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tb th{font-family:var(--f-mono);font-weight:500;color:var(--accent-text);white-space:nowrap;font-size:.84rem}
+.exr{display:flex;gap:10px;align-items:center;padding:6px 0}
+.mis{display:grid;gap:2px;padding:8px 10px;border-radius:8px;background:var(--surface2);margin-bottom:6px;font-size:.92rem}
+.mis s{color:var(--bad)}
+.mis b{color:var(--ok);font-weight:600}
+.mis span{color:var(--muted);font-size:.84rem}
+.dl{display:flex;gap:8px;align-items:flex-start;padding:6px 0}
+.dl .who{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);width:54px;flex:none;padding-top:9px;overflow:hidden;text-overflow:ellipsis}
+.dl .en{flex:1;min-width:0;padding-top:6px}
+.env{border-left:3px solid var(--accent);padding-left:12px;display:flex;flex-direction:column;gap:6px}
+.env.done{border-left-color:var(--ok)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.lbl{font-weight:600;font-size:.9rem}
+input[type=date]{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 12px;font:inherit}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:10px 6px;font-weight:600;font-size:.86rem;min-height:44px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.sheet{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;overscroll-behavior:contain}
+.sheet-in{max-width:560px;margin-inline:auto;padding-inline:16px;padding-block:0 40px}
+.sheet-top{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:calc(12px + env(safe-area-inset-top,0px)) 10px;border-bottom:1px solid var(--line);z-index:2}
+.stage{display:flex;flex-direction:column;gap:16px;padding-block:20px}
+.prompt{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center}
+.big{font-family:var(--f-display);font-weight:800;font-size:clamp(1.5rem,7vw,2rem);text-align:center;text-wrap:balance;line-height:1.2}
+.rate{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rate button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 4px;min-height:58px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
+.rate button small{font-family:var(--f-mono);font-weight:400;color:var(--muted);font-size:.7rem}
+.rate .r0{border-color:var(--bad)}
+.rate .r3{border-color:var(--ok)}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 14px;text-align:left;min-height:50px;font-weight:600}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--surface))}
+.fb{padding:10px 12px;border-radius:10px;background:var(--surface2);font-size:.92rem}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--f-display);font-size:1.7rem;font-weight:800;line-height:1.1}
+.stat span{font-size:.82rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:34px repeat(7,1fr);gap:6px;align-items:center}
+.grid .wl{font-family:var(--f-mono);font-size:.74rem;color:var(--muted)}
+.cell{aspect-ratio:1/1;min-height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-mono);font-size:.72rem;color:var(--muted);padding:0}
+.cell.part{background:color-mix(in srgb,var(--accent) 35%,var(--surface));color:var(--fg);border-color:transparent}
+.cell.full{background:var(--ok);color:#fff;border-color:transparent}
+.cell.now{outline:2px solid var(--focus);outline-offset:1px}
+.cell.fut{opacity:.55}
+.list-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;min-height:56px}
+.list-row:last-child{border-bottom:0}
+.list-row .tt{flex:1;min-width:0}
+.list-row .tt b{display:block}
+.list-row .tt span{font-size:.84rem;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
+.dot.l{background:var(--warn)}.dot.m{background:var(--ok)}
+.search{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 12px;font:inherit}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--sub-bg);color:var(--sub-fg);padding:10px 16px;border-radius:10px;z-index:80;font-weight:600;max-width:calc(100% - 32px);text-align:center;border:1px solid var(--line)}
+.flowbtn{width:84px;height:84px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;margin-inline:auto}
+.flowbtn svg{width:34px;height:34px;fill:currentColor}
+.note{font-size:.86rem;color:var(--muted)}
+.tm{font-family:var(--f-mono);font-size:1.6rem;font-weight:500;text-align:center}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
+</style></head><body style="margin:0">
+<div class="app" lang="tr">
+  <header class="top"><div class="brand">Lex<i>ium</i></div><button class="ibtn" data-act="settings" aria-label="Ayarlar"><svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
+  <main id="view"></main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Bölümler"></nav>
+<div class="sheet" id="sheet" hidden></div>
+<div class="toast" id="toast" hidden role="status"></div>
+<script>
+var W = [];
+W.push({
+n:1, t:"Tanışma ve to be", tense:"to be (am / is / are)", dates:"13–19 Ekim",
+goal:"Kendini tanıtmak, selamlaşmak, sayıları, günleri ve renkleri söylemek.",
+yt:[["Bob the Canadian: selamlaşma","Learn English with Bob the Canadian greetings"],["Easy English: tanışma","Easy English beginner introductions"],["Sayılar 1-100","English numbers 1 to 100 beginner"]],
+dlg:[["A","Hello! My name is Ali. What's your name?"],["B","Hi, Ali! I'm Sara. Nice to meet you."],["A","Nice to meet you, too. Where are you from?"],["B","I'm from Spain. And you?"],["A","I'm from Turkey."],["B","How are you today?"],["A","I'm fine, thank you. And you?"]],
+g:{intro:"İngilizcede 'olmak' fiili özneye göre değişir ve cümlede asla atlanmaz. Türkçedeki 'Ali'yim' gibi ek yok; İngilizcede önce özne, sonra am/is/are gelir.",
+table:[["I","am (I'm)"],["you","are (you're)"],["he / she / it","is (he's, she's, it's)"],["we / you / they","are (we're, they're)"]],
+ex:[["I am a student.","Ben öğrenciyim."],["She is from Spain.","O İspanyalı."],["We are friends.","Biz arkadaşız."],["It is red.","O kırmızı."],["They are at home.","Onlar evde."]],
+mis:[["I have 30 years.","I am 30.","Yaş için have değil be kullanılır."],["Am Ali.","I am Ali.","Özne atlanmaz."],["I from Turkey.","I'm from Turkey.","am atlanmaz."]],
+q:[["I ___ a student.",["am","is","are"],0,"I ile am kullanılır."],["She ___ from Italy.",["am","is","are"],1,"he/she/it ile is kullanılır."],["We ___ friends.",["is","are","am"],1,"we ile are kullanılır."],["I ___ thirty. (yaş)",["have","am","are"],1,"Yaş söylerken I am kullanılır."],["___ they teachers?",["Is","Am","Are"],2,"Soruda fiil öne geçer: Are they...?"]]},
+d:[
+["Hello! | Merhaba! | hıLOU","My name is Ali. | Benim adım Ali. | may NEYM iz ALİ","Nice to meet you. | Tanıştığımıza memnun oldum. | nays tu MİT yu","Where are you from? | Nerelisin? | WER ar yu FROM","I'm from Turkey. | Türkiye'denim. | aym from TÖRki"],
+["How are you? | Nasılsın? | HAU ar yu","I'm fine, thank you. | İyiyim, teşekkürler. | aym FAYN, THENK yu","And you? | Ya sen? | end YU","Good morning. | Günaydın. | gud MORning","Good night. | İyi geceler. | gud NAYT"],
+["Please. | Lütfen. | PLİZ","Thank you very much. | Çok teşekkür ederim. | THENK yu VEri MAÇ","You're welcome. | Rica ederim. | yor VELkım","Excuse me. | Affedersiniz. | ikSKYUZ mi","I'm sorry. | Özür dilerim. | aym SORi"],
+["One, two, three, four, five. | Bir, iki, üç, dört, beş. | wan, tu, thri, for, fayv","Six, seven, eight, nine, ten. | Altı, yedi, sekiz, dokuz, on. | siks, SEvın, eyt, nayn, ten","I'm thirty years old. | Otuz yaşındayım. | aym THÖRti yirz OULD","How old are you? | Kaç yaşındasın? | hau OULD ar yu","What's your phone number? | Telefon numaran nedir? | wots yor FOUN NAMbır"],
+["Monday, Tuesday, Wednesday. | Pazartesi, Salı, Çarşamba. | MANdey, TYUZdey, WENZdey","Thursday, Friday. | Perşembe, Cuma. | THÖRZdey, FRAYdey","Saturday, Sunday. | Cumartesi, Pazar. | SATırdey, SANdey","What day is it today? | Bugün günlerden ne? | wot DEY iz it tuDEY","Today is Tuesday. | Bugün salı. | tuDEY iz TYUZdey"],
+["Red, blue, green. | Kırmızı, mavi, yeşil. | red, blu, grin","Yellow, black, white. | Sarı, siyah, beyaz. | YElou, blek, wayt","What's your favorite color? | En sevdiğin renk ne? | wots yor FEYvırit KALır","My favorite color is blue. | En sevdiğim renk mavi. | may FEYvırit KALır iz BLU","It's a red car. | Bu kırmızı bir araba. | its ı red KAR"],
+["I don't understand. | Anlamıyorum. | ay DOUNT andırSTAND","Can you repeat that, please? | Tekrar eder misiniz lütfen? | ken yu riPİT dhet PLİZ","Speak slowly, please. | Lütfen yavaş konuşun. | spik SLOUli PLİZ","What does this mean? | Bu ne demek? | wot daz dhis MİN","I'm learning English. | İngilizce öğreniyorum. | aym LÖRning İNGliş"]],
+sp:["Kendini tanıt: adın ve nerelisin (30 sn).","Biriyle karşılaşıyormuş gibi iki rolü de sen oyna: Hello, how are you?","Teşekkür et, özür dile, rica et: 5 farklı durumda söyle.","1'den 20'ye kadar say; telefon numaranı İngilizce söyle.","Haftanın günlerini söyle; Today is ... ile bugünü anlat.","KONUŞMA GÜNÜ: 1 dk kendini tanıt, 5 renk söyle, yaşını söyle. Kaydet.","TEKRAR GÜNÜ: Haftanın tüm kalıplarını yüksek sesle söyle. 30 sn tanıtma kaydını al, sakla."],
+ms:["Evdeki 10 eşyaya bak ve rengini İngilizce söyle (a red cup).","Aynada kendini İngilizce tanıt, 30 saniye."]
+});
+W.push({
+n:2, t:"Aile, meslek ve soru kalıpları", tense:"to be: olumsuz, soru, this/that, a/an", dates:"20–26 Ekim",
+goal:"Ailenden ve işinden bahsetmek, nesneleri tanıtmak, evet/hayır soruları sormak.",
+yt:[["English with Lucy: başlangıç","English with Lucy beginner"],["Easy English: meslekler","Easy English jobs street interviews"],["this that these those","this that these those English lesson"]],
+dlg:[["A","Who is this?"],["B","This is my sister, Ayşe."],["A","Is she a student?"],["B","No, she isn't. She's a teacher."],["A","What do you do?"],["B","I'm an engineer. Are you from Ankara?"],["A","Yes, I am."]],
+g:{intro:"Olumsuz için am/is/are'den sonra not gelir. Soru için fiil özneden önce gelir. a ünsüz sesle, an ünlü sesle başlayan kelimelerin önünde kullanılır. Çoğul için kelimeye -s eklenir.",
+table:[["Olumsuz","I'm not / he isn't / they aren't"],["Soru","Am I? / Is she? / Are you?"],["a / an","a book, an apple"],["this / that","bu / şu (tek)"],["these / those","bunlar / şunlar (çoğul)"]],
+ex:[["Is he a doctor?","O doktor mu?"],["They aren't from Spain.","Onlar İspanyol değil."],["It's an orange.","Bu bir portakal."],["These are my keys.","Bunlar benim anahtarlarım."],["I'm not married.","Evli değilim."]],
+mis:[["He no is a doctor.","He isn't a doctor.","Olumsuz: is not."],["I have a orange.","I have an orange.","Ünlüyle başlayan kelime: an."],["This are my keys.","These are my keys.","Çoğul: these."]],
+q:[["___ he a doctor?",["Is","Are","Am"],0,"he ile Is kullanılır."],["They ___ from Spain. (olumsuz)",["isn't","aren't","don't"],1,"they + are not = aren't."],["It's ___ orange.",["a","an","the"],1,"orange ünlüyle başlar: an."],["___ are my keys.",["This","That","These"],2,"Çoğul ve yakın: These."],["I ___ married. (olumsuz)",["'m not","isn't","aren't"],0,"I ile 'm not kullanılır."]]},
+d:[
+["This is my mother. | Bu benim annem. | dhis iz may MADHır","This is my father. | Bu benim babam. | dhis iz may FADHır","I have a brother. | Bir erkek kardeşim var. | ay hev ı BRADHır","I have two sisters. | İki kız kardeşim var. | ay hev tu SİSstırz","This is my friend. | Bu benim arkadaşım. | dhis iz may FREND"],
+["What do you do? | Ne iş yapıyorsun? | wot du yu DU","I'm a student. | Öğrenciyim. | aym ı STYUdınt","I'm an engineer. | Mühendisim. | aym en enciNİR","She's a teacher. | O bir öğretmen. | şiz ı TİÇır","He is a doctor. | O bir doktor. | hi iz ı DOKtır"],
+["I'm Turkish. | Türküm. | aym TÖRkiş","She is from Germany. | O Almanya'dan. | şi iz from CÖRmıni","They are from Italy. | Onlar İtalya'dan. | dhey ar from İTıli","Is he American? | O Amerikalı mı? | iz hi ıMERikın","No, he isn't. He's British. | Hayır, değil. O İngiliz. | nou, hi İZınt. hiz BRİtiş"],
+["What is this? | Bu nedir? | wot iz DHİS","This is a phone. | Bu bir telefon. | dhis iz ı FOUN","That is my bag. | Şu benim çantam. | dhet iz may BEG","Is that your car? | Şu senin araban mı? | iz dhet yor KAR","These are my keys. | Bunlar benim anahtarlarım. | dhiz ar may KİZ"],
+["It's an apple. | Bu bir elma. | its en EPıl","It's an orange. | Bu bir portakal. | its en ORınc","I have a book and two pens. | Bir kitabım ve iki kalemim var. | ay hev ı BUK end tu PENZ","How many brothers do you have? | Kaç erkek kardeşin var? | hau MEni BRADHırz du yu HEV","I don't have any sisters. | Hiç kız kardeşim yok. | ay dount hev Eni SİSstırz"],
+["I'm not married. | Evli değilim. | aym not MERid","I'm single. | Bekârım. | aym SİNgıl","Are you married? | Evli misin? | ar yu MERid","I live in Ankara. | Ankara'da yaşıyorum. | ay liv in ANkara","I have a small family. | Küçük bir ailem var. | ay hev ı smol FEmili"],
+["Are you a student? | Öğrenci misin? | ar yu ı STYUdınt","Yes, I am. | Evet, öyleyim. | yes ay EM","No, I'm not. | Hayır, değilim. | nou aym NOT","Who is she? | O kim? | hu iz Şİ","Where is he? | O nerede? | wer iz Hİ"]],
+sp:["Ailenden 3 kişiyi tanıt: This is my ...","Mesleğini ve 3 tanıdığının mesleğini söyle.","5 ülke ve uyruk söyle: He's from Germany. He's German.","Evdeki 6 nesneyi this / that ile söyle.","Odandaki nesneleri a / an ile say.","KONUŞMA GÜNÜ: Ailen ve işin hakkında 1 dk kayıt al.","TEKRAR GÜNÜ: Hafta kalıplarını söyle; Are you ...? sorularını cevapla."],
+ms:["Ailen veya arkadaşların hakkında 3 cümle söyle (This is my ...).","Gün içinde gördüğün 5 kişinin mesleğini İngilizce söyle (He's a driver)."]
+});
+W.push({
+n:3, t:"Günlük rutin", tense:"Present simple", dates:"27 Ekim – 2 Kasım",
+goal:"Rutinini, saatleri ve alışkanlıklarını anlatmak.",
+yt:[["Günlük rutin (başlangıç)","daily routine English beginner"],["Easy English: günlük hayat","Easy English daily life"],["Present simple dersi","present simple beginner lesson"]],
+dlg:[["A","What time do you get up?"],["B","I get up at seven."],["A","Do you have breakfast?"],["B","Yes, I do. I usually have tea and bread."],["A","When do you start work?"],["B","I start at nine and finish at six."],["A","Do you work on Saturdays?"],["B","No, I don't."]],
+g:{intro:"Present simple rutinleri, alışkanlıkları ve genel gerçekleri anlatır. he/she/it ile fiile -s eklenir. Olumsuz ve soruda do/does yardımcı fiili kullanılır, asıl fiil yalın kalır.",
+table:[["I / you / we / they","work"],["he / she / it","works"],["Olumsuz","don't / doesn't + fiil"],["Soru","Do / Does + özne + fiil?"]],
+ex:[["I wake up at seven.","Yedide uyanırım."],["She doesn't work on Sundays.","O pazarları çalışmaz."],["Do you work from home?","Evden mi çalışıyorsun?"],["Does he speak English?","O İngilizce konuşur mu?"],["They go to work by bus.","Onlar işe otobüsle gider."]],
+mis:[["He work at nine.","He works at nine.","he/she/it + -s."],["Does he works?","Does he work?","does'tan sonra fiil yalın."],["I no like tea.","I don't like tea.","Olumsuz için don't."]],
+q:[["She ___ at nine.",["start","starts","starting"],1,"she ile fiile -s gelir."],["I ___ coffee. (olumsuz)",["doesn't drink","don't drink","not drink"],1,"I ile don't kullanılır."],["___ he speak English?",["Do","Does","Is"],1,"he ile Does kullanılır."],["They ___ to work by bus.",["goes","go","going"],1,"they ile yalın fiil."],["He doesn't ___ TV.",["watches","watch","watching"],1,"doesn't'tan sonra yalın fiil."]]},
+d:[
+["I wake up at seven. | Yedide uyanırım. | ","I have breakfast. | Kahvaltı yaparım. | ","I go to work by bus. | İşe otobüsle giderim. | ","I start work at nine. | Dokuzda işe başlarım. | ","What time is it? | Saat kaç? | "],
+["It's half past two. | Saat iki buçuk. | ","It's a quarter to five. | Beşe çeyrek var. | ","I have lunch at noon. | Öğlen yemek yerim. | ","I finish work at six. | Altıda işi bitiririm. | ","I get home at seven. | Yedide eve gelirim. | "],
+["I don't drink coffee. | Kahve içmem. | ","She doesn't work on Sundays. | O pazarları çalışmaz. | ","Do you work from home? | Evden mi çalışıyorsun? | ","Does he speak English? | O İngilizce konuşur mu? | ","Yes, he does. | Evet, konuşur. | "],
+["I wash the dishes. | Bulaşıkları yıkarım. | ","I clean the house on Saturdays. | Cumartesi günleri evi temizlerim. | ","I cook dinner every day. | Her gün akşam yemeği pişiririm. | ","I do the laundry. | Çamaşır yıkarım. | ","I take out the trash. | Çöpü çıkarırım. | "],
+["I watch TV in the evening. | Akşamları televizyon izlerim. | ","I go to bed at eleven. | Saat on birde yatarım. | ","I usually read before bed. | Genelde yatmadan önce okurum. | ","What do you do on weekends? | Hafta sonları ne yaparsın? | ","On weekends I relax. | Hafta sonları dinlenirim. | "],
+["I exercise twice a week. | Haftada iki kez spor yaparım. | ","I study English every day. | Her gün İngilizce çalışırım. | ","I drink tea in the morning. | Sabahları çay içerim. | ","I sleep late on Sundays. | Pazar günleri geç uyurum. | ","I eat dinner at eight. | Akşam yemeğini sekizde yerim. | "],
+["Tell me about your day. | Bana gününü anlat. | ","My day starts early. | Günüm erken başlar. | ","I'm very busy on weekdays. | Hafta içi çok meşgulüm. | ","I like my routine. | Rutinimi severim. | ","How is your day going? | Günün nasıl geçiyor? | "]],
+sp:["Sabah rutinini 5 cümleyle anlat.","Gün içinde saate her baktığında İngilizce söyle (5 kez).","Yapmadığın 3 şeyi söyle: I don't ...","Ev işlerini ve ne sıklıkla yaptığını söyle.","Akşam rutinini anlat.","KONUŞMA GÜNÜ: Bütün gününü 1,5 dk anlat ve kaydet.","TEKRAR GÜNÜ: Do you ...? sorularını kendine sor ve cevapla."],
+ms:["Gününü İngilizce 5 cümleyle özetle (I get up at ...).","Saate her baktığında İngilizce söyle (It's half past two)."]
+});
+W.push({
+n:4, t:"Yemek, alışveriş ve yapabildiklerin", tense:"Sıklık zarfları, can / can't, sevgi fiilleri + -ing", dates:"3–9 Kasım",
+goal:"Restoranda sipariş vermek, alışverişte fiyat sormak, yapabildiklerini ve sevdiklerini söylemek.",
+yt:[["Restoranda sipariş","ordering food in English restaurant dialogue slow"],["Markette İngilizce","English at the supermarket beginner"],["can and can't dersi","can can't beginner English lesson"]],
+dlg:[["Waiter","Hello! Can I take your order?"],["You","Yes, I'd like the chicken with rice, please."],["Waiter","Anything to drink?"],["You","Just water, please."],["You","Excuse me, can I have the bill?"],["Waiter","Of course. Here you are."],["You","Can I pay by card?"],["Waiter","Yes, you can."]],
+g:{intro:"Sıklık zarfları (always, usually, often, sometimes, rarely, never) fiilden önce, am/is/are'den sonra gelir. can + yalın fiil yeteneği ve izni anlatır. like, love, hate, enjoy fiillerinden sonra fiil -ing alır.",
+table:[["always","her zaman (%100)"],["usually","genellikle"],["often","sık sık"],["sometimes","bazen"],["rarely","nadiren"],["never","asla (%0)"]],
+ex:[["I always have breakfast.","Her zaman kahvaltı yaparım."],["She can't swim.","O yüzemez."],["Can you help me?","Bana yardım edebilir misin?"],["I enjoy taking photos.","Fotoğraf çekmekten hoşlanırım."],["He is never late.","O asla geç kalmaz."]],
+mis:[["I can to swim.","I can swim.","can'den sonra to gelmez."],["I like swim.","I like swimming.","like + -ing."],["She never is late.","She is never late.","to be'den sonra gelir."]],
+q:[["She is ___ late. (asla)",["never","doesn't","no"],0,"is never late: to be'den sonra gelir."],["I ___ swim. (yapamam)",["can't","don't can","no can"],0,"Olumsuz: can't."],["Can you ___ me?",["helping","help","helps"],1,"can'den sonra yalın fiil."],["I enjoy ___ photos.",["take","taking","to taking"],1,"enjoy + -ing."],["He ___ eats fast food. (nadiren)",["rarely","rare","rarity"],0,"rarely = nadiren."]]},
+d:[
+["I always have breakfast. | Her zaman kahvaltı yaparım. | ","I usually drink tea. | Genelde çay içerim. | ","I sometimes eat out. | Bazen dışarıda yerim. | ","I rarely eat fast food. | Nadiren fast food yerim. | ","I never drink soda. | Asla gazlı içecek içmem. | "],
+["Can I see the menu, please? | Menüye bakabilir miyim lütfen? | ","I'd like a coffee, please. | Bir kahve istiyorum lütfen. | ","What do you recommend? | Ne tavsiye edersiniz? | ","Can I have the bill, please? | Hesap alabilir miyim lütfen? | ","Is service included? | Servis dahil mi? | "],
+["I'd like the chicken with rice. | Pilavlı tavuk istiyorum. | ","Does it have meat? | İçinde et var mı? | ","No onions, please. | Soğansız lütfen. | ","Could we have some water? | Biraz su alabilir miyiz? | ","It was delicious. | Çok lezzetliydi. | "],
+["I can swim. | Yüzebilirim. | ","I can't cook very well. | Pek iyi yemek yapamam. | ","Can you help me? | Bana yardım edebilir misin? | ","Can I use your phone? | Telefonunu kullanabilir miyim? | ","I can't hear you. | Seni duyamıyorum. | "],
+["I like reading. | Okumayı severim. | ","I love listening to music. | Müzik dinlemeyi çok severim. | ","I hate waking up early. | Erken kalkmaktan nefret ederim. | ","Do you like cooking? | Yemek yapmayı sever misin? | ","I enjoy taking photos. | Fotoğraf çekmekten hoşlanırım. | "],
+["How much is this? | Bu ne kadar? | ","It's too expensive. | Çok pahalı. | ","Do you have a smaller size? | Daha küçük bir bedeniniz var mı? | ","Can I try it on? | Deneyebilir miyim? | ","I'll take it. | Bunu alıyorum. | "],
+["Can I pay by card? | Kartla ödeyebilir miyim? | ","Do you take cash? | Nakit kabul ediyor musunuz? | ","Here is your change. | İşte para üstünüz. | ","Do you have a discount? | İndiriminiz var mı? | ","Where is the cashier? | Kasa nerede? | "]],
+sp:["Yeme alışkanlıklarını sıklık zarflarıyla anlat.","Garson/müşteri rol yapması: iki rolü de sen oyna, sipariş ver.","Menüden 3 yemek seç ve ne istediğini söyle.","Yapabildiğin ve yapamadığın 6 şeyi söyle (can / can't).","Sevdiğin ve nefret ettiğin 5 şeyi -ing ile söyle.","KONUŞMA GÜNÜ: Restoran + alışveriş rol yapması, 2 dk kayıt al.","TEKRAR GÜNÜ: Fiyat sorma ve ödeme cümlelerini söyle."],
+ms:["Markette veya kafede fiyatları ve ürünleri içinden İngilizce söyle.","Sevdiğin 5 şeyi I like ... -ing ile söyle."]
+});
+W.push({
+n:5, t:"Ev, şehir ve yön tarifi", tense:"Present continuous, there is/are, yer edatları", dates:"10–16 Kasım",
+goal:"Şu an olanları anlatmak, evi ve çevreyi tarif etmek, yol sormak ve tarif etmek.",
+yt:[["Yön sorma","asking for directions English beginner"],["Present continuous","present continuous beginner lesson"],["Yer edatları","prepositions of place in on at lesson"]],
+dlg:[["A","Excuse me, where is the station?"],["B","Go straight and turn left at the traffic lights."],["A","Is it far?"],["B","No, it's a five-minute walk."],["A","Can you show me on the map?"],["B","Sure. It's on your left."],["A","Thank you very much."],["B","You're welcome."]],
+g:{intro:"Present continuous, şu anda olan veya geçici olan şeyleri anlatır: am/is/are + fiil-ing. There is tek, there are çoğul şeyler için 'var' anlamı verir. in, on, at, under, next to yer bildirir.",
+table:[["Olumlu","I am working"],["Olumsuz","She isn't sleeping"],["Soru","What are you doing?"],["there is","tek: There is a bank."],["there are","çoğul: There are two banks."]],
+ex:[["It's raining.","Yağmur yağıyor."],["What are you doing?","Ne yapıyorsun?"],["There is a sofa in the living room.","Oturma odasında bir koltuk var."],["My keys are on the table.","Anahtarlarım masanın üstünde."],["Is there a bank near here?","Buraya yakın bir banka var mı?"]],
+mis:[["I studying now.","I am studying now.","am/is/are atlanmaz."],["There is two bedrooms.","There are two bedrooms.","Çoğul: there are."],["The book is in the table.","The book is on the table.","Yüzeyde: on."]],
+q:[["I ___ studying now.",["am","do","have"],0,"I am studying."],["What ___ you doing?",["is","are","do"],1,"you ile are."],["___ a bank near here?",["There is","Is there","There are"],1,"Soruda Is there ...?"],["The book is ___ the table. (üstünde)",["in","on","at"],1,"Yüzeyin üstünde: on."],["There ___ two bedrooms.",["is","are","be"],1,"Çoğul: there are."]]},
+d:[
+["I'm studying English now. | Şu an İngilizce çalışıyorum. | ","What are you doing? | Ne yapıyorsun? | ","She is talking on the phone. | O telefonda konuşuyor. | ","It's raining. | Yağmur yağıyor. | ","We're waiting for the bus. | Otobüsü bekliyoruz. | "],
+["There is a sofa in the living room. | Oturma odasında bir koltuk var. | ","There are two bedrooms. | İki yatak odası var. | ","My keys are on the table. | Anahtarlarım masanın üstünde. | ","The cat is under the bed. | Kedi yatağın altında. | ","The kitchen is next to the bathroom. | Mutfak banyonun yanında. | "],
+["Is there a bank near here? | Buraya yakın bir banka var mı? | ","There is a pharmacy on the corner. | Köşede bir eczane var. | ","The station is far from here. | İstasyon buradan uzak. | ","The park is opposite the school. | Park okulun karşısında. | ","I live in an apartment. | Apartman dairesinde yaşıyorum. | "],
+["Excuse me, where is the station? | Affedersiniz, istasyon nerede? | ","How can I get to the airport? | Havalimanına nasıl gidebilirim? | ","Is it far from here? | Buradan uzak mı? | ","It's a five-minute walk. | Beş dakikalık yürüme mesafesi. | ","Can you show me on the map? | Bana haritada gösterebilir misiniz? | "],
+["Go straight. | Düz gidin. | ","Turn left at the traffic lights. | Trafik ışıklarından sola dönün. | ","Turn right at the corner. | Köşeden sağa dönün. | ","It's on your left. | Solunuzda. | ","You can't miss it. | Kaçırmazsınız. | "],
+["Which bus goes to the center? | Hangi otobüs merkeze gidiyor? | ","Where can I buy a ticket? | Bilet nereden alabilirim? | ","One ticket to Istanbul, please. | İstanbul'a bir bilet lütfen. | ","When does the next train leave? | Bir sonraki tren ne zaman kalkıyor? | ","Does this bus stop at the airport? | Bu otobüs havalimanında durur mu? | "],
+["I'm on my way. | Yoldayım. | ","I'm running late. | Geç kalıyorum. | ","Where are you now? | Şu an neredesin? | ","I'll be there in ten minutes. | On dakikaya orada olurum. | ","Let's meet at the entrance. | Girişte buluşalım. | "]],
+sp:["Şu an ne yaptığını ve çevrende olanları söyle.","Evini tarif et: There is / There are ...","Mahallendeki 5 yeri söyle: There is a ... on the corner.","3 farklı yer için yol sor.","Evden markete rotayı tarif et.","KONUŞMA GÜNÜ: Yol sorma ve tarif etme rol yapması. Bu hafta ilk gerçek insan seansını yap (italki / HelloTalk).","TEKRAR GÜNÜ: Ulaşım cümlelerini söyle."],
+ms:["Evdeki yerleri İngilizce tarif et (The remote is on the sofa).","Yürürken gördüklerini söyle (There is a bank ...)."]
+});
+W.push({
+n:6, t:"Geçmişi anlatmak", tense:"Past simple: was/were ve düzenli fiiller", dates:"17–23 Kasım",
+goal:"Dün ve geçen hafta ne yaptığını anlatmak, geçmişle ilgili soru sormak.",
+yt:[["Past simple dersi","past simple beginner lesson"],["BBC 6 Minute English","BBC 6 Minute English"],["-ed telaffuzu","pronounce ed endings English"]],
+dlg:[["A","How was your weekend?"],["B","It was great! I visited my parents."],["A","What did you do there?"],["B","We cooked together and watched a movie."],["A","Did you enjoy it?"],["B","Yes, I did. What about you?"],["A","I stayed at home and slept a lot."],["B","That sounds relaxing."]],
+g:{intro:"Geçmişte bitmiş olayları anlatmak için fiile -ed eklenir (watched, played). to be için was/were kullanılır. Olumsuz ve soruda did kullanılır ve asıl fiil yalın hale döner.",
+table:[["I / he / she / it","was"],["you / we / they","were"],["Olumlu","watched, played, cleaned"],["Olumsuz","didn't + yalın fiil"],["Soru","Did + özne + yalın fiil?"]],
+ex:[["I was at home yesterday.","Dün evdeydim."],["We played football on Saturday.","Cumartesi futbol oynadık."],["I didn't watch TV.","Televizyon izlemedim."],["Did you enjoy the party?","Partiyi beğendin mi?"],["They were very tired.","Çok yorgunlardı."]],
+mis:[["I didn't watched TV.","I didn't watch TV.","didn't'ten sonra yalın fiil."],["Did you went there?","Did you go there?","did'den sonra yalın fiil."],["I was go to school.","I went to school.","was + fiil yapılmaz."]],
+q:[["I ___ at home yesterday.",["was","were","am"],0,"I ile was."],["We ___ football on Saturday.",["play","played","plays"],1,"Geçmiş: played."],["I ___ watch TV last night. (olumsuz)",["didn't","don't","wasn't"],0,"didn't + yalın fiil."],["___ you enjoy the party?",["Do","Did","Were"],1,"Geçmiş soru: Did."],["They ___ very tired.",["was","were","did"],1,"they ile were."]]},
+d:[
+["I was at home yesterday. | Dün evdeydim. | ","Where were you last night? | Dün gece neredeydin? | ","It was a great day. | Harika bir gündü. | ","We were very tired. | Çok yorgunduk. | ","The film wasn't good. | Film iyi değildi. | "],
+["I watched a movie last night. | Dün gece bir film izledim. | ","She called me this morning. | Bu sabah beni aradı. | ","We played football on Saturday. | Cumartesi futbol oynadık. | ","I cleaned my room yesterday. | Dün odamı temizledim. | ","They visited their grandparents. | Büyükanne ve büyükbabalarını ziyaret ettiler. | "],
+["Did you sleep well? | İyi uyudun mu? | ","I didn't watch TV. | Televizyon izlemedim. | ","Did you enjoy the party? | Partiyi beğendin mi? | ","Yes, I did. | Evet, beğendim. | ","No, I didn't. | Hayır, beğenmedim. | "],
+["I started English two days ago. | İngilizceye iki gün önce başladım. | ","I lived in Izmir last year. | Geçen yıl İzmir'de yaşadım. | ","We arrived on Monday. | Pazartesi geldik. | ","I stayed at home last weekend. | Geçen hafta sonu evde kaldım. | ","I talked to him yesterday. | Dün onunla konuştum. | "],
+["How was your weekend? | Hafta sonun nasıldı? | ","It was relaxing. | Dinlendiriciydi. | ","I met my friends. | Arkadaşlarımla buluştum. | ","We walked in the park. | Parkta yürüdük. | ","I didn't do much. | Pek bir şey yapmadım. | "],
+["First, I woke up late. | Önce geç uyandım. | ","Then I had breakfast. | Sonra kahvaltı yaptım. | ","After that, I went out. | Ondan sonra dışarı çıktım. | ","Finally, I came home. | Sonunda eve geldim. | ","It was a long day. | Uzun bir gündü. | "],
+["What did you do yesterday? | Dün ne yaptın? | ","Who did you meet? | Kiminle buluştun? | ","Where did you go? | Nereye gittin? | ","Why did you stay at home? | Neden evde kaldın? | ","How did you get there? | Oraya nasıl gittin? | "]],
+sp:["Dün neredeydin ve nasıl bir gündü? Anlat.","Dün yaptığın 5 şeyi söyle.","Yapmadığın 3 şeyi ve 3 geçmiş soru söyle.","Geçen hafta ve iki gün önce yaptıklarını anlat.","Hafta sonunu anlat.","KONUŞMA GÜNÜ: Geçen günü First / Then / After that / Finally ile 2 dk anlat, kaydet.","TEKRAR GÜNÜ: Past simple sorularına cevap ver."],
+ms:["Dünü 5 cümleyle İngilizce anlat.","Telefon dilini bir gün İngilizce yap (Ayarlar → Sistem → Diller)."]
+});
+
+W.push({
+n:7, t:"Seyahat ve düzensiz fiiller", tense:"Past simple: düzensiz fiiller", dates:"24–30 Kasım",
+goal:"Havalimanı ve otelde konuşmak, geçmiş anılarını düzensiz fiillerle anlatmak.",
+yt:[["Seyahat İngilizcesi","travel English airport hotel dialogue"],["Düzensiz fiiller","irregular verbs pronunciation English"],["Seyahat vlogu (altyazılı)","travel vlog English subtitles beginner"]],
+dlg:[["Agent","Good evening. Do you have a reservation?"],["You","Yes, my name is Ali."],["Agent","Here is your key. Breakfast is at seven."],["You","Thank you. Does the room have Wi-Fi?"],["Agent","Yes, it does."],["You","Great. I took a long flight today and I'm very tired."],["Agent","Have a good rest."]],
+g:{intro:"Çok kullanılan fiillerin geçmiş hâli kuralsızdır: go → went, see → saw, eat → ate. Bunları ezberlemek yerine cümle içinde söyleyerek öğren. Olumsuz ve soruda yine didn't / did kullanılır ve fiil yalın kalır.",
+table:[["go","went"],["see","saw"],["eat","ate"],["have","had"],["buy","bought"],["take","took"],["make","made"],["write","wrote"]],
+ex:[["I went to Izmir.","İzmir'e gittim."],["We ate fish.","Balık yedik."],["I bought a new phone.","Yeni bir telefon aldım."],["She came late.","Geç geldi."],["Did you see the news?","Haberleri gördün mü?"]],
+mis:[["I goed to Izmir.","I went to Izmir.","go düzensiz: went."],["She buyed a phone.","She bought a phone.","buy → bought."],["Did you went?","Did you go?","did'den sonra yalın fiil."]],
+q:[["I ___ to Izmir last year.",["go","went","gone"],1,"go → went."],["She ___ a new phone.",["buyed","bought","buy"],1,"buy → bought."],["We ___ fish for dinner.",["eat","ate","eaten"],1,"eat → ate."],["He ___ a mistake.",["maked","made","make"],1,"make → made."],["Did you ___ the news?",["read","readed","reading"],0,"did'den sonra yalın fiil: read."]]},
+d:[
+["I went to Izmir. | İzmir'e gittim. | ","I saw a great movie. | Harika bir film gördüm. | ","We ate fish. | Balık yedik. | ","I had a long meeting. | Uzun bir toplantım vardı. | ","I bought a new phone. | Yeni bir telefon aldım. | "],
+["She came late. | Geç geldi. | ","I took a taxi. | Taksiye bindim. | ","I got a message. | Bir mesaj aldım. | ","He made a mistake. | Bir hata yaptı. | ","They gave me a gift. | Bana bir hediye verdiler. | "],
+["I wrote an email. | Bir e-posta yazdım. | ","I read the news. | Haberleri okudum. | ","We drank tea. | Çay içtik. | ","I slept for eight hours. | Sekiz saat uyudum. | ","I thought about it. | Bunu düşündüm. | "],
+["Where is the check-in desk? | Check-in masası nerede? | ","Here is my passport. | İşte pasaportum. | ","I have one suitcase. | Bir bavulum var. | ","Which gate is it? | Hangi kapı? | ","My flight was delayed. | Uçuşum rötar yaptı. | "],
+["I have a reservation. | Rezervasyonum var. | ","Does the room have Wi-Fi? | Odada Wi-Fi var mı? | ","What time is breakfast? | Kahvaltı saat kaçta? | ","Can I have a late check-out? | Geç çıkış yapabilir miyim? | ","The air conditioner doesn't work. | Klima çalışmıyor. | "],
+["We stayed in a small hotel. | Küçük bir otelde kaldık. | ","The weather was perfect. | Hava mükemmeldi. | ","We visited many museums. | Birçok müzeyi gezdik. | ","The food was amazing. | Yemekler harikaydı. | ","I took a lot of photos. | Çok fotoğraf çektim. | "],
+["Where did you go on holiday? | Tatilde nereye gittin? | ","How long did you stay? | Ne kadar kaldın? | ","What was the best part? | En iyi kısmı neydi? | ","Would you go again? | Tekrar gider miydin? | ","I'd love to go back. | Geri dönmeyi çok isterim. | "]],
+sp:["Geçen yıl nereye gittin? 5 düzensiz fiille anlat.","Dün aldığın veya yaptığın 5 şeyi anlat.","Bir e-posta yazdığını veya haber okuduğunu anlat.","Havalimanında check-in rol yapması (iki rolü de sen oyna).","Otel resepsiyonunda rol yapması.","KONUŞMA GÜNÜ: Bir tatil anısını 2–3 dk anlat, kaydet.","TEKRAR GÜNÜ: Düzensiz fiil listesinden 30 fiili sesli söyle."],
+ms:["Telefondaki uygulama menülerini İngilizce kullan.","Bir tatil fotoğrafına bakıp İngilizce anlat."]
+});
+W.push({
+n:8, t:"Planlar, hava ve sağlık", tense:"going to ve will", dates:"1–7 Aralık",
+goal:"Gelecek planlarını anlatmak, randevu almak, söz vermek ve yardım teklif etmek.",
+yt:[["will ve going to farkı","will vs going to English lesson"],["The English We Speak","BBC The English We Speak"],["Hava durumu İngilizcesi","weather vocabulary English beginner"]],
+dlg:[["A","What are you going to do this weekend?"],["B","I'm going to visit a friend. What about you?"],["A","I'm not sure. Maybe I'll go to the cinema."],["B","The weather will be nice on Sunday."],["A","Great! I'll call you if I have time."],["B","OK. See you then."]],
+g:{intro:"going to, önceden planlanmış veya belli işaretleri olan gelecek için kullanılır. will, o anda verilen karar, söz, teklif ve tahmin için kullanılır. İkisinden sonra da yalın fiil gelir.",
+table:[["am/is/are going to + fiil","plan: I'm going to travel."],["will + fiil","anlık karar, söz: I'll help you."],["won't","will not: I won't forget."],["Soru","Are you going to ...? / Will you ...?"]],
+ex:[["I'm going to travel in May.","Mayıs'ta seyahat edeceğim."],["I'll call you later.","Seni sonra ararım."],["It's going to snow.","Kar yağacak."],["I won't forget.","Unutmam."],["Shall I open the window?","Pencereyi açayım mı?"]],
+mis:[["I will to go.","I will go.","will'den sonra to gelmez."],["She going to start.","She is going to start.","is atlanmaz."],["I don't will forget.","I won't forget.","will olumsuzu: won't."]],
+q:[["I ___ travel in May. (plan)",["am going to","going to","will to"],0,"Plan: am going to."],["It's cold. I ___ close the window. (anlık karar)",["will","am going to","going"],0,"Anlık karar: will."],["She ___ going to start a new job.",["is","will","does"],0,"is going to."],["I ___ forget. (söz)",["won't","don't","not will"],0,"won't = will not."],["What are you ___ to do tomorrow?",["go","going","will"],1,"going to."]]},
+d:[
+["I'm going to travel in May. | Mayıs'ta seyahat edeceğim. | ","We're going to have dinner. | Akşam yemeği yiyeceğiz. | ","What are you going to do tomorrow? | Yarın ne yapacaksın? | ","She's going to start a new job. | Yeni bir işe başlayacak. | ","I'm not going to stay long. | Uzun kalmayacağım. | "],
+["I'll call you later. | Seni sonra ararım. | ","I'll help you. | Sana yardım ederim. | ","It will rain tomorrow. | Yarın yağmur yağacak. | ","I think it will be fine. | Bence sorun olmaz. | ","I won't forget. | Unutmam. | "],
+["What are your plans for the weekend? | Hafta sonu planların ne? | ","I'm meeting a friend. | Bir arkadaşımla buluşuyorum. | ","Maybe we'll go to the cinema. | Belki sinemaya gideriz. | ","I'm not sure yet. | Henüz emin değilim. | ","Let's decide later. | Sonra karar verelim. | "],
+["What's the weather like? | Hava nasıl? | ","It's sunny and warm. | Güneşli ve ılık. | ","It's cold and windy. | Soğuk ve rüzgârlı. | ","It's going to snow. | Kar yağacak. | ","Take an umbrella. | Şemsiye al. | "],
+["I have a headache. | Başım ağrıyor. | ","I don't feel well. | Kendimi iyi hissetmiyorum. | ","I need to see a doctor. | Doktora görünmem gerekiyor. | ","Do you have any medicine for a cold? | Soğuk algınlığı için bir ilacınız var mı? | ","Take a rest. | Biraz dinlen. | "],
+["I'd like to make an appointment. | Randevu almak istiyorum. | ","Is Thursday at three OK? | Perşembe saat üç uygun mu? | ","I can't make it on Friday. | Cuma günü gelemem. | ","Can we reschedule? | Ertelesek olur mu? | ","See you then. | O zaman görüşürüz. | "],
+["Shall I open the window? | Pencereyi açayım mı? | ","I'll be right back. | Hemen dönerim. | ","Don't worry, I'll do it. | Merak etme, ben yaparım. | ","I promise I'll call. | Söz veriyorum, ararım. | ","Let me know. | Bana haber ver. | "]],
+sp:["Yarın için 3 plan söyle: I'm going to ...","Birine söz ver ve yardım teklif et: I'll ...","Hafta sonu planlarını anlat.","Bugünün ve yarının havasını anlat.","Doktora veya eczaneye gitmiş gibi şikâyetini anlat.","KONUŞMA GÜNÜ: Randevu alma rol yapması ve gelecek planların, kaydet.","TEKRAR GÜNÜ: will ve going to farkını cümlelerle söyle."],
+ms:["Yarın için 3 plan söyle (I'm going to ...).","Her sabah havayı İngilizce söyle."]
+});
+W.push({
+n:9, t:"Karşılaştırma ve tavsiye", tense:"Karşılaştırma, have to, should", dates:"8–14 Aralık",
+goal:"İki şeyi karşılaştırmak, tercih belirtmek, tavsiye vermek ve zorunlulukları söylemek.",
+yt:[["Karşılaştırma dersi","comparatives superlatives English lesson"],["TED-Ed (altyazılı)","TED-Ed English subtitles"],["should ve have to","should must have to difference lesson"]],
+dlg:[["A","Which phone should I buy?"],["B","This one is cheaper, but that one is better."],["A","Is it more expensive?"],["B","Yes, but you have to think about the battery."],["A","Which one do you prefer?"],["B","I prefer the better one. It depends on the price."],["A","I think I'll take the better one."]],
+g:{intro:"Kısa sıfatlara -er (cheaper), uzun sıfatlara more eklenir; 'en' anlamı için the + -est / the most kullanılır. should tavsiye, have to zorunluluk bildirir. Üçünden sonra da yalın fiil gelir.",
+table:[["cheap","cheaper → the cheapest"],["interesting","more interesting → the most interesting"],["good","better → the best"],["bad","worse → the worst"],["should","tavsiye: You should rest."],["have to","zorunluluk: I have to work."]],
+ex:[["This phone is cheaper than that one.","Bu telefon şundan daha ucuz."],["It's the best restaurant in town.","Şehrin en iyi restoranı."],["You should rest.","Dinlenmelisin."],["You don't have to come.","Gelmek zorunda değilsin."],["I prefer tea to coffee.","Çayı kahveye tercih ederim."]],
+mis:[["more cheaper","cheaper","Kısa sıfat: -er, more değil."],["You should to rest.","You should rest.","should'tan sonra to gelmez."],["I must to go.","I must go. / I have to go.","must + yalın fiil."]],
+q:[["This phone is ___ than that one.",["cheap","cheaper","cheapest"],1,"İki şey: cheaper."],["It's the ___ restaurant in town.",["good","better","best"],2,"En iyi: the best."],["This film is ___ interesting than that one.",["more","most","much"],0,"Uzun sıfat: more interesting."],["You ___ rest. (tavsiye)",["should","have","must to"],0,"Tavsiye: should."],["I ___ work tomorrow. (zorunluluk)",["have to","should","am"],0,"Zorunluluk: have to."]]},
+d:[
+["This phone is cheaper than that one. | Bu telefon şundan daha ucuz. | ","My car is older than yours. | Arabam seninkinden daha eski. | ","It's easier than I thought. | Düşündüğümden daha kolay. | ","This is more interesting. | Bu daha ilginç. | ","Which one is better? | Hangisi daha iyi? | "],
+["It's the best restaurant in town. | Şehrin en iyi restoranı. | ","He is the tallest in the class. | Sınıfın en uzunu o. | ","That's the most expensive one. | Bu en pahalı olanı. | ","This is the worst day ever. | Bu şimdiye kadarki en kötü gün. | ","What's the most popular app? | En popüler uygulama hangisi? | "],
+["I have to work tomorrow. | Yarın çalışmam gerekiyor. | ","You don't have to come. | Gelmek zorunda değilsin. | ","Do we have to pay? | Ödemek zorunda mıyız? | ","I had to wait for an hour. | Bir saat beklemek zorunda kaldım. | ","You must wear a seat belt. | Emniyet kemeri takmalısın. | "],
+["You should rest. | Dinlenmelisin. | ","You shouldn't worry. | Endişelenmemelisin. | ","What should I do? | Ne yapmalıyım? | ","I think you should try it. | Bence denemelisin. | ","You should drink more water. | Daha çok su içmelisin. | "],
+["My phone is out of battery. | Telefonumun şarjı bitti. | ","Can you send me the file? | Dosyayı bana gönderebilir misin? | ","The Wi-Fi isn't working. | Wi-Fi çalışmıyor. | ","I'll download the app. | Uygulamayı indiririm. | ","Turn it off and on again. | Kapat ve tekrar aç. | "],
+["What are your hobbies? | Hobilerin neler? | ","I'm interested in photography. | Fotoğrafçılıkla ilgileniyorum. | ","I'm good at fixing things. | Bir şeyleri tamir etmekte iyiyim. | ","I spend my free time learning new things. | Boş zamanımı yeni şeyler öğrenerek geçiririm. | ","It's more fun than I expected. | Beklediğimden daha eğlenceli. | "],
+["Can you recommend a good movie? | İyi bir film önerebilir misin? | ","I prefer tea to coffee. | Çayı kahveye tercih ederim. | ","Which do you prefer? | Hangisini tercih edersin? | ","It depends on the price. | Fiyata bağlı. | ","In my opinion, it's worth it. | Bence değer. | "]],
+sp:["İki ürünü karşılaştır (3 cümle).","En sevdiğin 5 şeyi superlative ile söyle.","Yarın yapman gerekenleri söyle: I have to ...","Bir arkadaşına 5 tavsiye ver: You should ...","Bir teknoloji sorununu anlat ve çözüm iste.","KONUŞMA GÜNÜ: Hobilerini anlat ve iki şeyi karşılaştır (2 dk), kaydet.","TEKRAR GÜNÜ: Öneri ve tercih cümlelerini söyle."],
+ms:["Elindeki iki ürünü karşılaştır (This is cheaper than ...).","Bir YouTube videosunu İngilizce altyazıyla izle ve 1 dk özetle."]
+});
+W.push({
+n:10, t:"Deneyimler, iş ve telefon", tense:"Present perfect", dates:"15–21 Aralık",
+goal:"Deneyimlerini anlatmak, iş ve okul hakkında konuşmak, telefonda görüşmek.",
+yt:[["Present perfect dersi","present perfect beginner lesson"],["Culips podcast","Culips English podcast"],["Telefon konuşması","English phone call conversation beginner"]],
+dlg:[["A","Have you ever been to Rome?"],["B","No, I haven't. But I've been to Paris."],["A","When did you go?"],["B","Two years ago. I've never seen such a beautiful city."],["A","I'd love to go there."],["B","You should go!"]],
+g:{intro:"Present perfect (have/has + fiilin 3. hâli), geçmişte olup şimdiyle bağı olan şeyleri anlatır: deneyim, henüz/zaten, süre. Ne zaman olduğu belliyse past simple kullanılır. for = ne kadar süredir, since = ne zamandan beri.",
+table:[["have / has + 3. hâl","I have seen"],["ever / never","Have you ever ...? / I've never ..."],["already / yet / just","zaten / henüz / yeni"],["for","for two weeks (süre)"],["since","since 2022 (başlangıç)"]],
+ex:[["I have been to Rome.","Roma'da bulundum."],["Have you ever tried sushi?","Hiç suşi denedin mi?"],["I've just arrived.","Yeni geldim."],["I've worked here since 2022.","2022'den beri burada çalışıyorum."],["I've studied for two weeks.","İki haftadır çalışıyorum."]],
+mis:[["I have went there.","I have gone / been there.","have + 3. hâl: gone."],["I live here since 2020.","I have lived here since 2020.","since ile present perfect."],["I have seen him yesterday.","I saw him yesterday.","Zaman belli: past simple."]],
+q:[["I ___ never been to London.",["have","has","am"],0,"I ile have."],["She ___ lived here for five years.",["have","has","is"],1,"she ile has."],["Have you ___ sushi?",["eat","ate","eaten"],2,"eat → eaten."],["I've worked here ___ 2022.",["for","since","ago"],1,"Başlangıç noktası: since."],["I've studied English ___ two weeks.",["since","for","from"],1,"Süre: for."]]},
+d:[
+["I have been to Rome. | Roma'da bulundum. | ","Have you ever tried sushi? | Hiç suşi denedin mi? | ","I've never been to London. | Hiç Londra'da bulunmadım. | ","She has lived here for five years. | Beş yıldır burada yaşıyor. | ","I've already eaten. | Zaten yedim. | "],
+["Have you finished yet? | Henüz bitirdin mi? | ","Not yet. | Henüz değil. | ","I've just arrived. | Yeni geldim. | ","I've lost my keys. | Anahtarlarımı kaybettim. | ","We haven't met before. | Daha önce tanışmadık. | "],
+["I've known him for ten years. | Onu on yıldır tanıyorum. | ","I've worked here since 2022. | 2022'den beri burada çalışıyorum. | ","How long have you studied English? | Ne kadar zamandır İngilizce çalışıyorsun? | ","I've studied for two weeks. | İki haftadır çalışıyorum. | ","It's been a long time. | Uzun zaman oldu. | "],
+["What do you do for a living? | Geçimini nasıl sağlıyorsun? | ","I work in marketing. | Pazarlamada çalışıyorum. | ","I work for a small company. | Küçük bir şirkette çalışıyorum. | ","I have a meeting at ten. | Saat onda toplantım var. | ","I'm in charge of social media. | Sosyal medyadan ben sorumluyum. | "],
+["Hello, this is Ali speaking. | Merhaba, ben Ali. | ","Can I speak to Mr. Smith? | Bay Smith ile görüşebilir miyim? | ","Could you hold on a moment? | Bir saniye bekleyebilir misiniz? | ","I'll call you back. | Sizi geri ararım. | ","Can I take a message? | Mesaj alabilir miyim? | "],
+["I'm taking an English course. | İngilizce kursuna gidiyorum. | ","I have an exam next week. | Gelecek hafta sınavım var. | ","I've done my homework. | Ödevimi yaptım. | ","Can you explain this again? | Bunu tekrar açıklayabilir misin? | ","I've made a lot of progress. | Çok ilerleme kaydettim. | "],
+["That was the best experience of my life. | Hayatımın en iyi deneyimiydi. | ","I've learned a lot. | Çok şey öğrendim. | ","I've never done that before. | Bunu daha önce hiç yapmadım. | ","Have you tried it? | Denedin mi? | ","I'd like to try it. | Denemek isterim. | "]],
+sp:["Hayatında yaptığın 5 deneyimi söyle: I've been / seen / tried ...","Henüz yapmadıkların ve yeni yaptıklarını söyle (yet, just).","for ve since ile 5 cümle kur.","İşini veya okulunu anlat.","Telefon konuşması rol yapması: arama, mesaj bırakma.","KONUŞMA GÜNÜ: Deneyimlerini 3 dk anlat ve bir telefon simülasyonu yap, kaydet.","TEKRAR GÜNÜ: Have you ever ...? sorularını kendine sor ve cevapla."],
+ms:["Hayatındaki 3 deneyimi anlat (I've been to ...).","Bir İngilizce podcast aç ve 5 dk dinle."]
+});
+W.push({
+n:11, t:"Fikir, gerekçe ve tekrar", tense:"Bağlaçlar, 1. tip if, karma tekrar", dates:"22–28 Aralık",
+goal:"Görüş bildirmek, gerekçe vermek, uzun cümleler kurmak, kendi ilgi alanını anlatmak.",
+yt:[["Luke's English Podcast","Luke's English Podcast"],["Kısa belgesel (altyazılı)","short documentary English subtitles"],["Bağlaçlar dersi","because but so although English lesson"]],
+dlg:[["A","Do you think learning English is hard?"],["B","In my opinion, it's not hard, but it takes time."],["A","Why?"],["B","Because you need to practice every day."],["A","If I practice every day, will I improve?"],["B","Of course! Although it's slow, it works."]],
+g:{intro:"Bağlaçlar cümleleri birbirine bağlar: because (çünkü), but (ama), so (bu yüzden), although (-e rağmen). 1. tip if cümlesi gerçek olasılıkları anlatır: If + present simple, will + yalın fiil.",
+table:[["because","sebep: I stayed home because I was tired."],["but","zıtlık: I like it, but it's expensive."],["so","sonuç: It was late, so we left."],["although","-e rağmen: Although it was cold, ..."],["if","If it rains, I'll stay home."]],
+ex:[["I stayed home because I was tired.","Yorgun olduğum için evde kaldım."],["It was late, so we left.","Geç olmuştu, bu yüzden çıktık."],["If it rains, I'll stay home.","Yağmur yağarsa evde kalırım."],["Although it was cold, we went out.","Hava soğuk olmasına rağmen dışarı çıktık."],["In my opinion, it's a good idea.","Bence iyi bir fikir."]],
+mis:[["If it will rain, I'll stay.","If it rains, I'll stay.","if bölümünde will kullanılmaz."],["Because I was tired. I stayed.","I stayed because I was tired.","because tek başına cümle olmaz."],["Although it was cold, but we went.","Although it was cold, we went.","although ile but birlikte kullanılmaz."]],
+q:[["I stayed home ___ I was tired.",["because","so","but"],0,"Sebep: because."],["It was late, ___ we left.",["so","because","although"],0,"Sonuç: so."],["If it ___, I'll stay home.",["will rain","rains","rained"],1,"if bölümünde present simple."],["___ it was cold, we went out.",["Although","Because","So"],0,"Zıtlık: Although."],["I like it, ___ it's expensive.",["but","so","because"],0,"Zıtlık: but."]]},
+d:[
+["I stayed home because I was tired. | Yorgun olduğum için evde kaldım. | ","I like it, but it's expensive. | Hoşuma gidiyor ama pahalı. | ","It was late, so we left. | Geç olmuştu, bu yüzden çıktık. | ","Although it was cold, we went out. | Hava soğuk olmasına rağmen dışarı çıktık. | ","I was tired, but I kept working. | Yorgundum ama çalışmaya devam ettim. | "],
+["If it rains, I'll stay at home. | Yağmur yağarsa evde kalırım. | ","If you need help, call me. | Yardıma ihtiyacın olursa beni ara. | ","If I have time, I'll come. | Vaktim olursa gelirim. | ","What will you do if you miss the bus? | Otobüsü kaçırırsan ne yapacaksın? | ","I'll wait if you want. | İstersen beklerim. | "],
+["In my opinion, it's a good idea. | Bence iyi bir fikir. | ","I think so too. | Ben de öyle düşünüyorum. | ","I don't agree. | Katılmıyorum. | ","That's a good point. | İyi bir nokta. | ","I see what you mean. | Ne demek istediğini anlıyorum. | "],
+["The reason is simple. | Sebep basit. | ","That's why I like it. | Bu yüzden hoşuma gidiyor. | ","On the one hand, it's useful. | Bir yandan kullanışlı. | ","On the other hand, it's expensive. | Diğer yandan pahalı. | ","For example, I use it every day. | Örneğin, her gün kullanırım. | "],
+["I'm really interested in technology. | Teknolojiyle gerçekten ilgileniyorum. | ","I follow it every day. | Her gün takip ediyorum. | ","It's changing very fast. | Çok hızlı değişiyor. | ","I'd like to learn more about it. | Hakkında daha fazla öğrenmek isterim. | ","Can I tell you about my hobby? | Sana hobimden bahsedebilir miyim? | "],
+["Well, let me think. | Şey, bir düşüneyim. | ","By the way, do you have a minute? | Bu arada, bir dakikan var mı? | ","Actually, I changed my mind. | Aslında fikrimi değiştirdim. | ","To be honest, I'm not sure. | Dürüst olmak gerekirse emin değilim. | ","What I mean is this. | Demek istediğim şu. | "],
+["How do you say this in English? | Bunu İngilizce nasıl söylersin? | ","What's the word for this? | Bunun kelimesi nedir? | ","Could you say that again, more slowly? | Bunu daha yavaş tekrar söyler misin? | ","I'm still learning. | Hâlâ öğreniyorum. | ","I've come a long way. | Çok yol kat ettim. | "]],
+sp:["Because / but / so ile 6 cümle kur.","If ile 5 olasılık söyle.","Bir konuda görüşünü bildir: In my opinion ...","Görüşüne gerekçe ver: For example, ...","Kendi ilgi alanını 2 dk anlat.","KONUŞMA GÜNÜ: İlgi alanını 3–4 dk anlat ve fikir belirt. Kaydet ve 1. haftanın kaydıyla karşılaştır.","TEKRAR GÜNÜ: 11 haftanın en önemli 30 kalıbını yüksek sesle söyle."],
+ms:["Bir konuda fikrini İngilizce kaydet (3 dk).","Bir saat boyunca içinden sadece İngilizce düşünmeyi dene."]
+});
+
+var FINAL = [
+{t:"Final 1: Konuşma", d:"5 dakikalık kayıt al: kendini, işini, geçen tatilini ve gelecek planlarını anlat. 1. haftadaki 30 saniyelik kaydınla karşılaştır.", task:"5 dk konuşma kaydı al ve ilk kayıtla karşılaştır."},
+{t:"Final 2: Dinleme", d:"Daha önce izlemediğin, 5 dakikalık basit bir İngilizce videoyu bir kez altyazısız izle. Sonra ana fikri ve en az 3 detayı İngilizce söyle.", task:"5 dk'lık yeni bir videoyu altyazısız izle ve özetle."},
+{t:"Final 3: Gerçek sohbet", d:"Gerçek biriyle (italki, Preply, HelloTalk veya Tandem) 10 dakikalık tanışma sohbeti yap. Hedef: duraksasan da konuşmayı sürdürmek.", task:"10 dk gerçek bir kişiyle sohbet et."}
+];
+
+var VERBS = [["be","was / were","been","olmak"],["become","became","become","olmak, haline gelmek"],["begin","began","begun","başlamak"],["bring","brought","brought","getirmek"],["buy","bought","bought","satın almak"],["come","came","come","gelmek"],["do","did","done","yapmak"],["drink","drank","drunk","içmek"],["drive","drove","driven","araba sürmek"],["eat","ate","eaten","yemek"],["fall","fell","fallen","düşmek"],["feel","felt","felt","hissetmek"],["find","found","found","bulmak"],["forget","forgot","forgotten","unutmak"],["get","got","got","almak, olmak"],["give","gave","given","vermek"],["go","went","gone / been","gitmek"],["have","had","had","sahip olmak"],["hear","heard","heard","duymak"],["know","knew","known","bilmek"],["leave","left","left","ayrılmak"],["lose","lost","lost","kaybetmek"],["make","made","made","yapmak, üretmek"],["meet","met","met","tanışmak, buluşmak"],["pay","paid","paid","ödemek"],["read","read","read","okumak"],["run","ran","run","koşmak"],["say","said","said","söylemek"],["see","saw","seen","görmek"],["sell","sold","sold","satmak"],["send","sent","sent","göndermek"],["sit","sat","sat","oturmak"],["sleep","slept","slept","uyumak"],["speak","spoke","spoken","konuşmak"],["take","took","taken","almak, götürmek"],["teach","taught","taught","öğretmek"],["tell","told","told","anlatmak"],["think","thought","thought","düşünmek"],["understand","understood","understood","anlamak"],["wake","woke","woken","uyanmak"],["wear","wore","worn","giymek"],["write","wrote","written","yazmak"]];
+
+(function(){
+'use strict';
+var TOTAL=80, START="2026-10-13", LS="icinde-v1";
+var $=function(s,r){return (r||document).querySelector(s);};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var wait=function(ms){return new Promise(function(r){setTimeout(r,ms);});};
+
+var IC={
+ play:'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+ pause:'<svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
+ check:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+ close:'<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ prev:'<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M15 5l-7 7 7 7"/></svg>',
+ next:'<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 5l7 7-7 7"/></svg>'
+};
+var TABS=[
+ ['today','Bugün','<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>'],
+ ['cards','Kartlar','<svg viewBox="0 0 24 24"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v9"/></svg>'],
+ ['flow','Akış','<svg viewBox="0 0 24 24"><path d="M3 12h3l3-7 4 14 3-7h5"/></svg>'],
+ ['gram','Yapı','<svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h6"/></svg>'],
+ ['prog','İlerleme','<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>']
+];
+
+/* ---------- veri ---------- */
+var CARDS=[], BY={};
+W.forEach(function(w,wi){w.d.forEach(function(day,di){day.forEach(function(s,k){
+  var p=s.split(' | ');
+  var c={id:(wi+1)+'-'+(di+1)+'-'+(k+1),en:p[0].trim(),tr:(p[1]||'').trim(),ok:(p[2]||'').trim(),w:wi,d:di};
+  CARDS.push(c);BY[c.id]=c;
+});});});
+function cardsOf(wi,di){return CARDS.filter(function(c){return c.w===wi&&c.d===di;});}
+function info(n){ if(n>77) return {n:n,fin:FINAL[n-78]}; var wi=Math.floor((n-1)/7); return {n:n,wi:wi,w:W[wi],di:(n-1)%7}; }
+var STD=[["Isınma",5,"Eski kartları hatırla"],["Dinle",12,"Üç geçişli dinleme"],["Kalıplar",6,"Bugünün 5 kalıbı"],["Yapı",8,"Haftanın dilbilgisi"],["Shadowing",6,"Diyaloğu taklit et"],["Alıştırma",5,"Kısa test"],["Konuş",3,"Bugünün konuşma görevi"]];
+var STF=[["Isınma",5,"Eski kartları hatırla"],["Görev",25,"Final görevi"],["Karma test",10,"10 soruluk test"],["Yansıtma",5,"Ne öğrendin?"]];
+function defs(n){return n>77?STF:STD;}
+
+/* ---------- durum ---------- */
+var S={v:1,start:START,steps:{},srs:{},q:[],env:{},settings:{rate:0.9,ok:true},up:0};
+var UI={tab:'today',day:1,open:null};
+function load(){ try{ var r=localStorage.getItem(LS); if(r){ var o=JSON.parse(r); for(var k in o) S[k]=o[k]; } }catch(e){} }
+var remote=null, remoteBusy=false, remoteT=null;
+function save(){
+  S.up=Date.now();
+  try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){}
+  if(remote){ clearTimeout(remoteT); remoteT=setTimeout(pushRemote,2000); }
+}
+async function pushRemote(){
+  if(!remote||remoteBusy) return; remoteBusy=true;
+  try{ await remote.set({up:S.up,json:JSON.stringify(S)}); }catch(e){}
+  remoteBusy=false;
+}
+async function initRemote(){
+  try{
+    var c=window.claude; if(!c||!c.use) return;
+    var db=await c.use('db'), user=await c.use('user'); if(!db||!user) return;
+    var id=await user.id(); if(!id) return;
+    var ref=db.doc('data/users/'+id+'/profile');
+    var snap=await ref.get();
+    if(snap.exists){
+      var r=snap.data();
+      if(r&&r.json&&r.up>S.up){ try{ var o=JSON.parse(r.json); for(var k in o) S[k]=o[k]; try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){} remote=ref; render(); return; }catch(e){} }
+    }
+    remote=ref;
+    if(S.up>0) pushRemote();
+  }catch(e){}
+}
+
+/* ---------- tarih ---------- */
+function utcDay(y,m,d){return Math.floor(Date.UTC(y,m,d)/864e5);}
+function today(){var d=new Date();return utcDay(d.getFullYear(),d.getMonth(),d.getDate());}
+function startDay(){var p=S.start.split('-').map(Number);return utcDay(p[0],p[1]-1,p[2]);}
+function curDay(){return Math.min(TOTAL,Math.max(1,today()-startDay()+1));}
+function fmt(n){return new Date((startDay()+n-1)*864e5).toLocaleDateString('tr-TR',{day:'numeric',month:'long',timeZone:'UTC'});}
+
+/* ---------- adımlar ---------- */
+function isDone(n,i){return !!(S.steps[n]&&S.steps[n][i]);}
+function setStep(n,i,v){ var a=S.steps[n]||(S.steps[n]=[]); a[i]=!!v; save(); }
+function doneCount(n){return defs(n).filter(function(_,i){return isDone(n,i);}).length;}
+function firstOpen(n){ var d=defs(n); for(var i=0;i<d.length;i++) if(!isDone(n,i)) return i; return null; }
+
+/* ---------- SRS ---------- */
+function addCards(n){ var I=info(n); if(!I.w) return 0; var c=0; cardsOf(I.wi,I.di).forEach(function(k){ if(!S.srs[k.id]){S.srs[k.id]={e:2.3,i:0,r:0,due:today()};c++;} }); if(c) save(); return c; }
+function dueIds(){ return Object.keys(S.srs).filter(function(id){return S.srs[id].due<=today();}).sort(function(a,b){return S.srs[a].due-S.srs[b].due;}); }
+function nextInt(c,q){
+  if(q===0) return 0;
+  if(q===1) return Math.max(1,Math.round((c.i||1)*1.2));
+  if(q===2) return c.r===0?1:(c.r===1?3:Math.round(c.i*c.e));
+  return c.r===0?4:Math.max(4,Math.round((c.i||1)*c.e*1.3));
+}
+function lbl(c,q){ var i=nextInt(c,q); if(q===0) return 'şimdi'; if(i<30) return i+' gün'; return Math.round(i/30)+' ay'; }
+function rate(id,q){
+  var c=S.srs[id]; if(!c) return;
+  var i=nextInt(c,q);
+  if(q===0){c.r=0;c.i=0;c.e=Math.max(1.3,c.e-0.2);c.due=today();}
+  else{ if(q===1)c.e=Math.max(1.3,c.e-0.15); if(q===3)c.e=c.e+0.15; c.r++;c.i=i;c.due=today()+i; }
+  save();
+}
+function mastered(){return Object.keys(S.srs).filter(function(id){return S.srs[id].i>=21;}).length;}
+
+/* ---------- ses ---------- */
+var voices=[];
+function loadVoices(){ try{voices=speechSynthesis.getVoices()||[];}catch(e){} }
+if('speechSynthesis' in window){ loadVoices(); try{speechSynthesis.onvoiceschanged=loadVoices;}catch(e){} }
+function pickVoice(lang){
+  var pre=lang==='en'?['en-US','en_US','en-GB','en_GB']:['tr-TR','tr_TR'];
+  for(var i=0;i<pre.length;i++){ var f=voices.find(function(v){return v.lang===pre[i];}); if(f) return f; }
+  return voices.find(function(v){return v.lang.toLowerCase().indexOf(lang)===0;})||null;
+}
+function say(text,lang,rate,pitch){
+  return new Promise(function(res){
+    if(!('speechSynthesis' in window)){res();return;}
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang=lang==='en'?'en-US':'tr-TR';
+    var v=pickVoice(lang); if(v){u.voice=v;u.lang=v.lang;}
+    u.rate=rate||S.settings.rate; if(pitch) u.pitch=pitch;
+    var done=false, to;
+    var fin=function(){ if(!done){done=true;clearTimeout(to);res();} };
+    u.onend=fin; u.onerror=fin;
+    to=setTimeout(fin,3500+text.length*170/(u.rate||1));
+    setTimeout(function(){ try{speechSynthesis.speak(u);}catch(e){fin();} },40);
+  });
+}
+function stopSay(){ try{speechSynthesis.cancel();}catch(e){} }
+function play(text,slow){ stopSay(); setTimeout(function(){say(text,'en',slow?0.6:S.settings.rate);},60); }
+function toast(t){ var el=$('#toast'); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(function(){el.hidden=true;},2400); }
+
+/* ---------- yardımcılar ---------- */
+function rng(seed){ var a=seed>>>0; return function(){ a|=0;a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function shuffle(arr,seed){ var r=rng(seed||Date.now()),a=arr.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(r()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function streak(){
+  var cd=curDay(), n=cd, c=0;
+  if(!(S.steps[n]&&S.steps[n].some(Boolean))) n--;
+  while(n>=1&&S.steps[n]&&S.steps[n].some(Boolean)){c++;n--;}
+  return c;
+}
+function phraseRow(c){
+  return '<div class="ph"><button class="ibtn play" data-act="play" data-t="'+esc(c.en)+'" aria-label="Dinle">'+IC.play+'</button>'+
+   '<div class="ph-t"><div class="en">'+esc(c.en)+'</div><div class="tr">'+esc(c.tr)+'</div>'+((c.ok&&S.settings.ok)?'<div class="ok">'+esc(c.ok)+'</div>':'')+'</div>'+
+   '<button class="ibtn sm" data-act="slow" data-t="'+esc(c.en)+'" aria-label="Yavaş dinle">0.6×</button></div>';
+}
+function gramHTML(w){
+  var g=w.g;
+  return '<p>'+esc(g.intro)+'</p>'+
+   '<div class="scroll"><table class="tb">'+g.table.map(function(r){return '<tr><th scope="row">'+esc(r[0])+'</th><td>'+esc(r[1])+'</td></tr>';}).join('')+'</table></div>'+
+   '<h4>Örnekler</h4>'+g.ex.map(function(e){return '<div class="exr"><button class="ibtn play" data-act="play" data-t="'+esc(e[0])+'" aria-label="Dinle">'+IC.play+'</button><div><div class="en">'+esc(e[0])+'</div><div class="tr">'+esc(e[1])+'</div></div></div>';}).join('')+
+   '<h4>Sık yapılan hatalar</h4>'+g.mis.map(function(m){return '<div class="mis"><s>'+esc(m[0])+'</s><b>'+esc(m[1])+'</b><span>'+esc(m[2])+'</span></div>';}).join('');
+}
+
+
+/* ---------- sayfa iskeleti ---------- */
+var sheet=$('#sheet'), SEQ={tok:0}, TMR=null, RESET=false;
+function openSheet(html){ sheet.innerHTML='<div class="sheet-in">'+html+'</div>'; sheet.hidden=false; sheet.scrollTop=0; document.body.style.overflow='hidden'; }
+function closeSheet(){ sheet.hidden=true; sheet.innerHTML=''; document.body.style.overflow=''; stopSay(); SEQ.tok++; REV=null; Q=null; RESET=false; render(); }
+function sheetTop(title,right){ return '<div class="sheet-top"><h3>'+esc(title)+'</h3><div class="row" style="flex-wrap:nowrap;align-items:center">'+(right||'')+'<button class="ibtn" data-act="close" aria-label="Kapat">'+IC.close+'</button></div></div>'; }
+function counter(t){return '<span class="muted" style="font-family:var(--f-mono);font-size:.82rem">'+t+'</span>';}
+function buildTabs(){
+  $('#tabs').innerHTML=TABS.map(function(t){return '<button data-act="tab" data-t="'+t[0]+'" aria-selected="'+(UI.tab===t[0])+'">'+t[2]+'<span>'+t[1]+'</span></button>';}).join('');
+}
+function render(){
+  buildTabs();
+  var f={today:rToday,cards:rCards,flow:rFlow,gram:rGram,prog:rProg}[UI.tab];
+  $('#view').innerHTML=f();
+}
+function doneBtn(n,i,label){
+  return '<button class="btn ghost" data-act="step" data-n="'+n+'" data-i="'+i+'">'+(isDone(n,i)?'Tamamlandı · geri al':(label||'Yaptım'))+'</button>';
+}
+
+/* ---------- Bugün ---------- */
+function rToday(){
+  var n=UI.day, I=info(n), D=defs(n), dn=doneCount(n), cd=curDay();
+  var title=I.fin?I.fin.t:I.w.t;
+  var eyebrow='Gün '+n+' / '+TOTAL+' · '+(I.fin?'Final':'Hafta '+(I.wi+1))+' · '+fmt(n);
+  var goal=I.fin?I.fin.d:I.w.goal;
+  var chips=I.fin?'<span class="chip hi">Final</span>':'<span class="chip hi">'+esc(I.w.tense)+'</span>'+(I.di===5?'<span class="chip">Konuşma günü</span>':'')+(I.di===6?'<span class="chip">Tekrar günü</span>':'');
+  var ms=I.fin?'Bugün en az 15 dakika İngilizce bir podcast veya video aç ve altyazısız dinle.':I.w.ms[I.di%2];
+  var h='<section class="hero"><div class="daynav"><button class="ibtn" data-act="day" data-d="-1" aria-label="Önceki gün"'+(n<=1?' disabled':'')+'>'+IC.prev+'</button><div class="mid">'+(n!==cd?'<button class="btn ghost" style="min-height:36px;padding:0 12px" data-act="today">Bugüne dön</button>':'Bugün')+'</div><button class="ibtn" data-act="day" data-d="1" aria-label="Sonraki gün"'+(n>=TOTAL?' disabled':'')+'>'+IC.next+'</button></div>'+
+   '<div class="eyebrow">'+esc(eyebrow)+'</div><h1>'+esc(title)+'</h1><p class="muted">'+esc(goal)+'</p><div class="chips">'+chips+'<span class="chip">45 dk</span></div>'+
+   '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+D.length+'" aria-valuenow="'+dn+'"><i style="width:'+Math.round(dn/D.length*100)+'%"></i></div><div class="note">'+dn+' / '+D.length+' adım tamam'+(n>cd?' · Bu gün '+fmt(n)+' tarihinde açılır, önden bakabilirsin.':'')+'</div></section>';
+  h+='<div class="sec" style="padding-block:6px 4px"><div class="env'+(S.env[n]?' done':'')+'"><div class="eyebrow">Gün içi çevre görevi</div><div>'+esc(ms)+'</div><div><button class="btn ghost" style="min-height:40px" data-act="env" data-n="'+n+'">'+(S.env[n]?'Yapıldı · geri al':'Yaptım')+'</button></div></div></div>';
+  h+='<div class="sec" style="padding-block:10px 4px"><div class="row"><button class="btn ghost" data-act="rquick">Hızlı 3 dk tekrar</button></div></div>';
+  h+='<div class="steps" style="padding-block:6px 8px">';
+  D.forEach(function(s,i){
+    var open=UI.open===i, dn_=isDone(n,i);
+    h+='<div class="step'+(open?' on':'')+(dn_?' done':'')+'"><button data-act="open" data-i="'+i+'" aria-expanded="'+open+'"><span class="num">'+(dn_?IC.check:(i+1))+'</span><span><span class="st-t">'+esc(s[0])+'</span><span class="st-d">'+esc(s[2])+'</span></span><span class="st-m">'+s[1]+' dk</span></button>'+(open?'<div class="panel">'+panel(n,i,I)+'</div>':'')+'</div>';
+  });
+  return h+'</div>';
+}
+function panel(n,i,I){
+  if(i===0){
+    var due=dueIds().length, has=Object.keys(S.srs).length;
+    return '<p>'+(has?(due?'Tekrar bekleyen <b>'+due+'</b> kart var. Önce İngilizcesini söyle, sonra cevabı kontrol et.':'Bugün tekrar bekleyen kart yok.'):'Henüz kartın yok. Bugünün kalıpları 3. adımı bitirince kartlara eklenir.')+'</p><div class="row"><button class="btn" data-act="rdue"'+(due?'':' disabled')+'>Kartları başlat</button>'+doneBtn(n,0,'Geç')+'</div>';
+  }
+  if(I.fin){
+    if(i===1) return '<p>'+esc(I.fin.d)+'</p><div class="card"><b>Görev:</b> '+esc(I.fin.task)+'</div>'+doneBtn(n,1);
+    if(i===2) return '<p>Şimdiye kadar öğrendiğin kalıplardan 10 soru.</p><button class="btn" data-act="quiz" data-n="'+n+'">Testi başlat</button>'+doneBtn(n,2,'Geç');
+    return '<p>Kendine şunları sor ve sesli cevapla:</p><ol class="how"><li>1. haftadaki kaydımla bugünkü kayıt arasında ne fark var?</li><li>Hangi 3 cümleyi artık duraksamadan söyleyebiliyorum?</li><li>Ocak ayında hangi konuyu çalışmak istiyorum?</li></ol>'+doneBtn(n,3);
+  }
+  var w=I.w;
+  if(i===1){
+    return '<ol class="how"><li><b>Genel dinleme:</b> Altyazısız dinle, sadece ana fikri yakala.</li><li><b>Parça parça:</b> 1–2 dakikalık bölümleri tekrar dinle, anlamadığın yerleri not al.</li><li><b>Altyazıyla kontrol:</b> İngilizce altyazıyı aç, duyup anlamadığın kalıpları karta ekle.</li></ol><p class="note">Aynı içeriği haftanın 5 günü kullan. Tekrar, yeni içerikten daha çok öğretir.</p><div class="links">'+
+     w.yt.map(function(y){return '<a href="https://www.youtube.com/results?search_query='+encodeURIComponent(y[1])+'" target="_blank" rel="noopener noreferrer">'+esc(y[0])+'<span>YouTube</span></a>';}).join('')+'</div>'+doneBtn(n,1);
+  }
+  if(i===2){
+    var cs=cardsOf(I.wi,I.di);
+    return '<div>'+cs.map(phraseRow).join('')+'</div><div class="row"><button class="btn ghost" data-act="playday" data-n="'+n+'">Hepsini dinle</button><button class="btn" data-act="learn" data-n="'+n+'">'+(isDone(n,2)?'Kartlara eklendi':'Kartlara ekle ve bitir')+'</button></div><p class="note">Her kalıbı 3 kez yüksek sesle söyle. Kartlara eklenenler yarın tekrar sorulur.</p>';
+  }
+  if(i===3){
+    return gramHTML(w)+'<div class="card"><b>Görev:</b> Bu yapıyla kendi hayatından 5 cümle kur ve sesli söyle.</div>'+doneBtn(n,3);
+  }
+  if(i===4){
+    var who={}, idx=0;
+    return '<p>Önce dinle. Sonra aynı anda, aynı ritimle söylemeye çalış. Hız ve vurgu, kelimeleri tek tek doğru söylemekten önemli.</p><div>'+
+     w.dlg.map(function(l){ if(!(l[0] in who)){who[l[0]]=idx++;} return '<div class="dl"><span class="who">'+esc(l[0])+'</span><div class="en">'+esc(l[1])+'</div><button class="ibtn play" data-act="play" data-t="'+esc(l[1])+'" aria-label="Dinle">'+IC.play+'</button></div>'; }).join('')+'</div>'+
+     '<div class="row"><button class="btn ghost" data-act="playdlg" data-n="'+n+'">Hepsini oynat</button><button class="btn ghost" data-act="slowdlg" data-n="'+n+'">Yavaş oynat</button></div>'+doneBtn(n,4);
+  }
+  if(i===5){
+    var last=S.q.filter(function(q){return q.n===n;}).slice(-1)[0];
+    return '<p>Haftanın dilbilgisinden 5, bugünün kalıplarından 3 soru.</p>'+(last?'<p class="note">Son sonucun: '+last.s+' / '+last.t+'</p>':'')+'<button class="btn" data-act="quiz" data-n="'+n+'">Testi başlat</button>'+(isDone(n,5)?'<p class="note">Bu adım tamamlandı.</p>':'');
+  }
+  return '<div class="card"><b>'+esc(w.sp[I.di])+'</b></div><p class="note">Telefonunun ses kaydedicisini aç, kendi sesini kaydet ve bir kez geri dinle. Hatayı kendin yakalamak, başkasının düzeltmesinden daha kalıcıdır.</p><div class="tm" id="tm">2:00</div><div class="row"><button class="btn ghost" data-act="timer">2 dk sayacı başlat</button>'+doneBtn(n,6)+'</div>';
+}
+
+/* ---------- Kartlar ---------- */
+function cardList(q){
+  var ids=Object.keys(S.srs).map(function(id){return BY[id];}).filter(Boolean);
+  q=(q||'').toLowerCase();
+  if(q) ids=ids.filter(function(c){return c.en.toLowerCase().indexOf(q)>-1||c.tr.toLowerCase().indexOf(q)>-1;});
+  if(!ids.length) return '<p class="muted">'+(q?'Eşleşen kalıp yok.':'Henüz kartın yok. Günün 3. adımını bitirince kalıplar buraya eklenir.')+'</p>';
+  return ids.map(function(c){var s=S.srs[c.id];var cl=s.i>=21?'m':(s.r>0?'l':'');return '<div class="ph"><span class="dot '+cl+'"></span><div class="ph-t"><div class="en">'+esc(c.en)+'</div><div class="tr">'+esc(c.tr)+'</div></div><button class="ibtn play" data-act="play" data-t="'+esc(c.en)+'" aria-label="Dinle">'+IC.play+'</button></div>';}).join('');
+}
+function rCards(){
+  var learned=Object.keys(S.srs).length, due=dueIds().length;
+  return '<section class="sec"><h2>Kartlar</h2><div class="stats"><div class="stat"><b>'+due+'</b><span>bugün tekrar bekliyor</span></div><div class="stat"><b>'+learned+'</b><span>öğrenilen kalıp</span></div></div>'+
+   '<div class="row"><button class="btn" data-act="rdue"'+(due?'':' disabled')+'>Tekrarı başlat</button><button class="btn ghost" data-act="rquick">Hızlı 3 dk</button></div>'+
+   '<p class="note">Bir kart önce Türkçesini gösterip İngilizcesini söylemeni, bir sonraki sefer sesini dinletip anlamını bulmanı ister. Turuncu nokta: öğreniyorsun. Yeşil nokta: oturdu.</p>'+
+   '<input class="search" id="cs" placeholder="Kalıp ara" aria-label="Kalıp ara"><div class="card" id="cl">'+cardList('')+'</div></section>';
+}
+function quickIds(){
+  var ids=dueIds().slice(0,5);
+  if(ids.length<5){ var rest=Object.keys(S.srs).filter(function(i){return ids.indexOf(i)<0;}); ids=ids.concat(shuffle(rest,Date.now()).slice(0,5-ids.length)); }
+  return ids;
+}
+
+/* ---------- Kart tekrarı ---------- */
+var REV=null;
+function openReview(ids,title,from){
+  if(!ids.length){toast(Object.keys(S.srs).length?'Tekrar edilecek kart yok':'Önce günün 3. adımında kalıpları kartlara ekle');return;}
+  REV={q:ids.slice(),i:0,flip:false,title:title,from:from,n:ids.length};
+  renderRev();
+}
+function renderRev(){
+  if(REV.i>=REV.q.length){ finishRev(); return; }
+  var id=REV.q[REV.i], c=BY[id], s=S.srs[id], listen=(s.r%2===1);
+  var h=sheetTop(REV.title,counter((REV.i+1)+' / '+REV.q.length)), b;
+  if(!REV.flip){
+    b=(listen?'<div class="prompt">Dinle</div><button class="flowbtn" data-act="rplay" aria-label="Dinle">'+IC.play+'</button><p class="muted" style="text-align:center">Ne anlama geliyor? Önce kendin söyle.</p>':'<div class="prompt">İngilizcesini söyle</div><div class="big">'+esc(c.tr)+'</div>')+'<button class="btn block" data-act="rflip">Cevabı göster</button>';
+  }else{
+    b='<div class="sub">'+esc(c.en)+'</div><div class="tr" style="text-align:center">'+esc(c.tr)+'</div>'+((c.ok&&S.settings.ok)?'<div class="ok" style="text-align:center">'+esc(c.ok)+'</div>':'')+
+      '<div class="row" style="justify-content:center"><button class="btn ghost" data-act="rplay">Dinle</button><button class="btn ghost" data-act="rslow">Yavaş</button></div><p class="note" style="text-align:center">Yüksek sesle tekrar et, sonra ne kadar iyi bildiğini seç.</p>'+
+      '<div class="rate">'+['Tekrar','Zor','İyi','Kolay'].map(function(t,q){return '<button class="r'+q+'" data-act="rate" data-q="'+q+'">'+t+'<small>'+lbl(s,q)+'</small></button>';}).join('')+'</div>';
+  }
+  openSheet(h+'<div class="stage">'+b+'</div>');
+  if(!REV.flip&&listen) play(c.en);
+}
+function finishRev(){
+  if(REV.from==='due') setStep(curDay(),0,true);
+  openSheet(sheetTop('Tekrar bitti')+'<div class="stage"><div class="big">Tamam.</div><p class="muted" style="text-align:center">'+REV.n+' kart tekrar edildi. Kalıpları gün içinde de içinden söylemeyi dene.</p><button class="btn block" data-act="close">Kapat</button></div>');
+}
+
+/* ---------- Testler ---------- */
+var Q=null;
+function gq(q,seed){ var o=q[1].map(function(t,k){return {t:t,ok:k===q[2]};}); return {k:'g',p:q[0],opts:shuffle(o,seed+Date.now()),exp:q[3]}; }
+function pq(c,pool,kind,seed){
+  var others=shuffle(pool.filter(function(x){return x.id!==c.id&&x.tr!==c.tr&&x.en!==c.en;}),seed).slice(0,2);
+  var o=(kind==='l'?[{t:c.tr,ok:true}].concat(others.map(function(x){return {t:x.tr,ok:false};})):[{t:c.en,ok:true}].concat(others.map(function(x){return {t:x.en,ok:false};})));
+  return {k:kind,id:c.id,en:c.en,tr:c.tr,opts:shuffle(o,seed+Date.now())};
+}
+function buildQuiz(o){
+  var qs=[], n=o.day;
+  if(o.gram!=null){ W[o.gram].g.q.forEach(function(q,i){qs.push(gq(q,o.gram*10+i));}); return qs; }
+  var I=info(n);
+  if(I.w){
+    I.w.g.q.forEach(function(q,i){qs.push(gq(q,n*7+i));});
+    var pool=CARDS.filter(function(c){return c.w===I.wi;});
+    shuffle(cardsOf(I.wi,I.di),n).slice(0,3).forEach(function(c,k){qs.push(pq(c,pool,k%2===0?'l':'r',n+k));});
+  }else{
+    var all=CARDS.filter(function(c){return S.srs[c.id];}); if(all.length<10) all=CARDS.slice();
+    shuffle(all,n).slice(0,10).forEach(function(c,k){qs.push(pq(c,CARDS.filter(function(x){return x.w===c.w;}),k%2===0?'l':'r',n+k));});
+  }
+  return qs;
+}
+function openQuiz(o,title,mark){ Q={qs:buildQuiz(o),i:0,sc:0,sel:null,mark:mark,title:title}; renderQ(); }
+function renderQ(){
+  if(Q.i>=Q.qs.length){ finishQ(); return; }
+  var q=Q.qs[Q.i];
+  var head=q.k==='g'?'<div class="prompt">Boşluğu doldur</div><div class="big">'+esc(q.p)+'</div>':(q.k==='l'?'<div class="prompt">Dinle ve anlamını seç</div><button class="flowbtn" data-act="qplay" aria-label="Dinle">'+IC.play+'</button>':'<div class="prompt">İngilizcesini seç</div><div class="big">'+esc(q.tr)+'</div>');
+  var opts='<div class="opts">'+q.opts.map(function(o,k){var cls='opt';if(Q.sel!=null){if(o.ok)cls+=' right';else if(k===Q.sel)cls+=' wrong';}return '<button class="'+cls+'" data-act="qpick" data-k="'+k+'"'+(Q.sel!=null?' disabled':'')+'>'+esc(o.t)+'</button>';}).join('')+'</div>';
+  var fb='';
+  if(Q.sel!=null){ var good=q.opts[Q.sel].ok; fb='<div class="fb"><b>'+(good?'Doğru.':'Yanlış.')+'</b> '+(q.k==='g'?esc(q.exp):esc(q.en)+' = '+esc(q.tr))+'</div><button class="btn block" data-act="qnext">'+(Q.i+1>=Q.qs.length?'Bitir':'Sonraki')+'</button>'; }
+  openSheet(sheetTop(Q.title,counter((Q.i+1)+' / '+Q.qs.length))+'<div class="stage">'+head+opts+fb+'</div>');
+  if(q.k==='l'&&Q.sel==null) play(q.en);
+}
+function finishQ(){
+  var t=Q.qs.length, s=Q.sc, mark=Q.mark;
+  S.q.push({n:mark||0,s:s,t:t,ts:Date.now()}); S.q=S.q.slice(-60);
+  if(mark) setStep(mark,defs(mark)===STF?2:5,true); else save();
+  var msg=s===t?'Hepsi doğru.':(s/t>=0.7?'İyi gidiyorsun. Yanlışlarını kartlar tekrar soracak.':'Sorun değil. Yapı sekmesinden konuyu tekrar oku, sonra yine dene.');
+  openSheet(sheetTop('Sonuç')+'<div class="stage"><div class="big">'+s+' / '+t+'</div><p class="muted" style="text-align:center">'+msg+'</p><button class="btn block" data-act="close">Kapat</button></div>');
+}
+
+/* ---------- Akış ---------- */
+var F={run:false,tok:0,idx:0,mode:'dinle',src:'today'}, WL=null;
+function wake(){ try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(function(l){WL=l;}).catch(function(){}); }catch(e){} }
+function unwake(){ try{ if(WL) WL.release(); }catch(e){} WL=null; }
+function flowList(){
+  var I=info(UI.day), l;
+  if(F.src==='today') l=I.w?cardsOf(I.wi,I.di):CARDS.filter(function(c){return S.srs[c.id];});
+  else if(F.src==='week') l=I.w?CARDS.filter(function(c){return c.w===I.wi;}):CARDS.slice();
+  else l=CARDS.filter(function(c){return S.srs[c.id];});
+  if(!l.length) l=I.w?cardsOf(I.wi,I.di):CARDS.slice();
+  return l;
+}
+function showFlow(c,idx,hide){
+  var a=$('#fEn'),b=$('#fTr'),o=$('#fOk'),k=$('#fCnt'); if(!a) return;
+  a.textContent=hide?'···':c.en; b.textContent=c.tr; o.textContent=(c.ok&&S.settings.ok)?c.ok:''; k.textContent=((idx%flowList().length)+1)+' / '+flowList().length;
+}
+function updFlowBtn(){ var b=$('#fBtn'); if(b){ b.innerHTML=F.run?IC.pause:IC.play; b.setAttribute('aria-label',F.run?'Durdur':'Başlat'); } }
+async function flowRun(){
+  var t=++F.tok; F.run=true; wake(); updFlowBtn();
+  while(F.run&&F.tok===t){
+    var list=flowList(), c=list[F.idx%list.length], r=S.settings.rate;
+    if(F.mode==='dinle'){
+      showFlow(c,F.idx);
+      await say(c.en,'en',r); if(F.tok!==t) return; await wait(500);
+      await say(c.tr,'tr',1); if(F.tok!==t) return; await wait(500);
+      await say(c.en,'en',Math.max(0.5,r*0.8));
+    }else{
+      showFlow(c,F.idx,true);
+      await say(c.tr,'tr',1); if(F.tok!==t) return;
+      await wait(2500+c.en.length*110); if(F.tok!==t) return;
+      showFlow(c,F.idx); await say(c.en,'en',r);
+    }
+    if(F.tok!==t) return; await wait(900); F.idx++;
+  }
+}
+function flowStop(){ F.run=false; F.tok++; stopSay(); unwake(); updFlowBtn(); }
+function rFlow(){
+  var list=flowList(), c=list[F.idx%list.length];
+  var seg=function(key,items){return '<div class="seg" role="group">'+items.map(function(it){return '<button data-act="fset" data-k="'+key+'" data-v="'+it[0]+'" aria-pressed="'+(F[key]===it[0])+'">'+it[1]+'</button>';}).join('')+'</div>';};
+  return '<section class="sec"><h2>Akış</h2><p class="muted">Cümleler arka arkaya sesli oynar. Yürürken, yolda, ev işi yaparken aç. Duyduğun cümleyi içinden veya sesli tekrar et.</p>'+
+   '<div class="sub" id="fEn">'+esc(c.en)+'</div><div class="tr" id="fTr" style="text-align:center">'+esc(c.tr)+'</div><div class="ok" id="fOk" style="text-align:center">'+((c.ok&&S.settings.ok)?esc(c.ok):'')+'</div>'+
+   '<button class="flowbtn" id="fBtn" data-act="ftoggle" aria-label="'+(F.run?'Durdur':'Başlat')+'">'+(F.run?IC.pause:IC.play)+'</button><div class="muted" id="fCnt" style="text-align:center;font-family:var(--f-mono);font-size:.82rem">'+((F.idx%list.length)+1)+' / '+list.length+'</div>'+
+   '<div class="field"><span class="lbl">Ne çalsın?</span>'+seg('src',[['today','Bugünün kalıpları'],['week','Bu hafta'],['learned','Öğrendiklerim']])+'</div>'+
+   '<div class="field"><span class="lbl">Nasıl çalsın?</span>'+seg('mode',[['dinle','Dinle: EN, TR, EN'],['soyle','Söyle: TR, boşluk, EN']])+'<p class="note">Söyle modunda Türkçesi okunur, sen İngilizcesini söylersin, sonra cevap çalar.</p></div>'+
+   '<p class="note">Ekran açık ve ses açık olmalı. Telefon kilitlenirse veya uygulama arka plana geçerse sesli okuma durabilir.</p></section>';
+}
+
+/* ---------- Yapı ---------- */
+function rGram(){
+  var cd=info(curDay()), cw=cd.wi==null?10:cd.wi;
+  return '<section class="sec"><h2>Yapı</h2><p class="muted">Haftalık dilbilgisi dersleri ve düzensiz fiiller. Günün 4. adımında da buradaki ders açılır.</p></section><div class="card" style="padding:0">'+
+   W.map(function(w,i){return '<button class="list-row" data-act="gopen" data-i="'+i+'"><span class="num">'+(i+1)+'</span><span class="tt"><b>'+esc(w.t)+'</b><span>'+esc(w.tense)+(i===cw?' · bu hafta':'')+'</span></span></button>';}).join('')+
+   '<button class="list-row" data-act="verbs"><span class="num">V</span><span class="tt"><b>Düzensiz fiiller</b><span>'+VERBS.length+' fiil, 3 hâli ve anlamı</span></span></button></div>';
+}
+
+/* ---------- İlerleme ---------- */
+var MS=[[21,"3. hafta sonu testi","Kendini 1 dk tanıt ve günlük rutinini anlat. Kâğıda bakmadan, anlaşılır cümlelerle."],[42,"6. hafta sonu testi","Restoran veya yol tarifi rol yapması yap ve yavaş bir diyaloğu anlamaya çalış."],[63,"9. hafta sonu testi","Geçmişte yaşadığın bir olayı 2–3 dk anlat. Past simple'ı çoğunlukla doğru kullan."],[78,"Final","3 günlük final: konuşma kaydı, dinleme özeti ve gerçek bir sohbet."]];
+function rProg(){
+  var cd=curDay(), full=0, n;
+  for(n=1;n<=TOTAL;n++) if(doneCount(n)===defs(n).length) full++;
+  var qs=0,qt=0; S.q.forEach(function(q){qs+=q.s;qt+=q.t;});
+  var cell=function(n){var d=doneCount(n),L=defs(n).length,cls='cell';if(d===L)cls+=' full';else if(d>0)cls+=' part';if(n===cd)cls+=' now';if(n>cd)cls+=' fut';return '<button class="'+cls+'" data-act="goto" data-n="'+n+'" aria-label="Gün '+n+'">'+n+'</button>';};
+  var rows='';
+  for(var w=0;w<11;w++){ rows+='<span class="wl">H'+(w+1)+'</span>'; for(var d=1;d<=7;d++) rows+=cell(w*7+d); }
+  rows+='<span class="wl">F</span>'+cell(78)+cell(79)+cell(80)+'<span></span><span></span><span></span><span></span>';
+  var nm=MS.filter(function(m){return m[0]>=cd;})[0]||MS[3];
+  return '<section class="sec"><h2>İlerleme</h2><div class="stats"><div class="stat"><b>'+streak()+'</b><span>gün üst üste</span></div><div class="stat"><b>'+full+'</b><span>tamamlanan gün</span></div><div class="stat"><b>'+Object.keys(S.srs).length+'</b><span>öğrenilen kalıp ('+mastered()+' oturdu)</span></div><div class="stat"><b>'+(qt?Math.round(qs/qt*100)+'%':'—')+'</b><span>test doğruluğu</span></div></div>'+
+   '<h4>80 günlük harita</h4><div class="grid">'+rows+'</div><p class="note">Yeşil: tüm adımlar tamam. Sarı: kısmen. Bir güne dokunursan o günün dersine gidersin.</p>'+
+   '<div class="card"><div class="eyebrow">Sıradaki ölçüm · Gün '+nm[0]+' · '+fmt(nm[0])+'</div><h3 style="margin-block:4px">'+esc(nm[1])+'</h3><p class="muted">'+esc(nm[2])+'</p></div></section>';
+}
+
+/* ---------- Ayarlar ---------- */
+function openSettings(){
+  var ev=pickVoice('en'), tv=pickVoice('tr');
+  var info_=ev?'İngilizce ses: '+esc(ev.name)+(tv?'. Türkçe ses de var.':'. Türkçe ses bulunamadı, Akış modunda çeviriler okunmayabilir.'):'İngilizce ses bulunamadı. Telefonun metin okuma ayarlarından İngilizce (ABD) ses verisini indir.';
+  openSheet(sheetTop('Ayarlar')+'<div class="stage">'+
+   '<div class="field"><label for="sd">Programın 1. günü</label><input type="date" id="sd" value="'+esc(S.start)+'"><p class="note">Tarihi değiştirirsen günler buna göre kayar. İlerlemen silinmez.</p><button class="btn ghost" data-act="startnow">Bugünü Gün 1 yap</button></div>'+
+   '<div class="field"><label for="rt">Konuşma hızı: <span id="rtv">'+S.settings.rate.toFixed(2)+'×</span></label><input type="range" id="rt" min="0.5" max="1.1" step="0.05" value="'+S.settings.rate+'"><button class="btn ghost" data-act="voicetest">Sesi dene</button><p class="note">'+info_+'</p></div>'+
+   '<div class="field"><label><input type="checkbox" id="okc"'+(S.settings.ok?' checked':'')+'> Türkçe okunuşu göster (1. ve 2. hafta)</label></div>'+
+   '<h4>Telefonda her an yanında</h4><ol class="how"><li>Bu sayfayı Chrome\'da açabiliyorsan menüden (⋮) "Ana ekrana ekle" de. Uygulama gibi tek dokunuşla açılır.</li><li>Gün içine 3 alarm koy: sabah Isınma, öğle Hızlı 3 dk, akşam günün dersi.</li><li>Yolda, ev işinde veya sıradayken Akış sekmesini aç ve cümleleri duy.</li><li>Telefonunun dilini İngilizce yapmayı 6. haftanın görevinde dene. Gün boyu İngilizceyle karşılaşmak, çalışma saatinin dışında kalan en güçlü araçtır.</li></ol>'+
+   '<h4>Sıfırlama</h4>'+(RESET?'<p>Tüm ilerleme ve kartlar silinecek. Emin misin?</p><div class="row"><button class="btn ghost" data-act="reset2" style="border-color:var(--bad);color:var(--bad)">Evet, sıfırla</button><button class="btn ghost" data-act="reset0">Vazgeç</button></div>':'<button class="btn ghost" data-act="reset1">İlerlemeyi sıfırla</button>')+
+   '</div>');
+}
+
+/* ---------- Eylemler ---------- */
+function toTop(){ window.scrollTo(0,0); }
+function startSeq(lines){ var t=++SEQ.tok; stopSay(); (async function(){ for(var i=0;i<lines.length;i++){ if(SEQ.tok!==t) return; await say(lines[i].t,'en',lines[i].r,lines[i].p); await wait(450); } })(); }
+var ACT={
+  tab:function(d){ if(UI.tab==='flow') flowStop(); UI.tab=d.t; render(); toTop(); },
+  day:function(d){ UI.day=Math.min(TOTAL,Math.max(1,UI.day+Number(d.d))); UI.open=firstOpen(UI.day); render(); },
+  today:function(){ UI.day=curDay(); UI.open=firstOpen(UI.day); render(); },
+  goto:function(d){ UI.tab='today'; UI.day=Number(d.n); UI.open=firstOpen(UI.day); render(); toTop(); },
+  open:function(d){ var i=Number(d.i); UI.open=(UI.open===i?null:i); render(); },
+  step:function(d){ var n=Number(d.n), i=Number(d.i), v=!isDone(n,i); setStep(n,i,v); if(v) UI.open=firstOpen(n); render(); },
+  env:function(d){ var n=Number(d.n); S.env[n]=!S.env[n]; save(); render(); },
+  play:function(d){ SEQ.tok++; play(d.t); },
+  slow:function(d){ SEQ.tok++; play(d.t,true); },
+  playday:function(d){ var I=info(Number(d.n)); startSeq(cardsOf(I.wi,I.di).map(function(c){return {t:c.en};})); },
+  playdlg:function(d){ var I=info(Number(d.n)), who={}, k=0; startSeq(I.w.dlg.map(function(l){ if(!(l[0] in who)) who[l[0]]=k++; return {t:l[1],p:who[l[0]]%2?0.8:1.05}; })); },
+  slowdlg:function(d){ var I=info(Number(d.n)), who={}, k=0; startSeq(I.w.dlg.map(function(l){ if(!(l[0] in who)) who[l[0]]=k++; return {t:l[1],r:0.65,p:who[l[0]]%2?0.8:1.05}; })); },
+  learn:function(d){ var n=Number(d.n), c=addCards(n); setStep(n,2,true); toast(c?c+' kart eklendi':'Kartlar zaten ekli'); UI.open=firstOpen(n); render(); },
+  timer:function(){ if(TMR){clearInterval(TMR);TMR=null;} var s=120; var e=$('#tm'); if(e) e.textContent='2:00'; TMR=setInterval(function(){ s--; var el=$('#tm'); if(!el){clearInterval(TMR);TMR=null;return;} if(s<=0){clearInterval(TMR);TMR=null;el.textContent='Süre doldu';return;} el.textContent=Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60); },1000); },
+  rdue:function(){ openReview(dueIds().slice(0,40),'Tekrar','due'); },
+  rquick:function(){ openReview(quickIds(),'Hızlı tekrar','quick'); },
+  rflip:function(){ REV.flip=true; renderRev(); play(BY[REV.q[REV.i]].en); },
+  rplay:function(){ play(BY[REV.q[REV.i]].en); },
+  rslow:function(){ play(BY[REV.q[REV.i]].en,true); },
+  rate:function(d){ var id=REV.q[REV.i], q=Number(d.q); rate(id,q); if(q===0) REV.q.push(id); REV.i++; REV.flip=false; renderRev(); },
+  quiz:function(d){ var n=Number(d.n); openQuiz({day:n},n>77?'Karma test':'Gün '+n+' alıştırma',n); },
+  gopen:function(d){ var i=Number(d.i), w=W[i]; openSheet(sheetTop('Hafta '+(i+1))+'<div class="stage" style="gap:10px"><h2>'+esc(w.t)+'</h2><div class="chips"><span class="chip hi">'+esc(w.tense)+'</span></div>'+gramHTML(w)+'<button class="btn block" data-act="gquiz" data-i="'+i+'" style="margin-top:12px">5 soruluk alıştırma</button></div>'); },
+  gquiz:function(d){ openQuiz({gram:Number(d.i)},'Alıştırma',0); },
+  verbs:function(){ openSheet(sheetTop('Düzensiz fiiller')+'<div class="stage"><p class="muted">Cümle içinde söyleyerek öğren: I go, I went, I have gone.</p><div class="scroll"><table class="tb"><tr><th>Yalın</th><th>Geçmiş</th><th>3. hâl</th><th>Anlam</th><th></th></tr>'+VERBS.map(function(v){return '<tr><td><b>'+esc(v[0])+'</b></td><td>'+esc(v[1])+'</td><td>'+esc(v[2])+'</td><td>'+esc(v[3])+'</td><td><button class="ibtn sm play" data-act="play" data-t="'+esc(v[0]+', '+v[1].replace(' / ',', ')+', '+v[2].replace(' / ',', '))+'" aria-label="Dinle">'+IC.play+'</button></td></tr>';}).join('')+'</table></div></div>'); },
+  qplay:function(){ play(Q.qs[Q.i].en); },
+  qpick:function(d){ if(Q.sel!=null) return; var k=Number(d.k), q=Q.qs[Q.i]; Q.sel=k; var good=q.opts[k].ok; if(good) Q.sc++; else if(q.id){ if(!S.srs[q.id]){S.srs[q.id]={e:2.3,i:0,r:0,due:today()};save();} else rate(q.id,0); } renderQ(); },
+  qnext:function(){ Q.i++; Q.sel=null; renderQ(); },
+  ftoggle:function(){ if(F.run) flowStop(); else flowRun(); },
+  fset:function(d){ var was=F.run; if(was) flowStop(); F[d.k]=d.v; F.idx=0; render(); if(was) flowRun(); },
+  settings:function(){ openSettings(); },
+  startnow:function(){ var d=new Date(); S.start=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); save(); UI.day=curDay(); UI.open=firstOpen(UI.day); openSettings(); toast('Bugün Gün 1 oldu'); },
+  voicetest:function(){ say('Hello! This is how the app will sound.','en',S.settings.rate); },
+  reset1:function(){ RESET=true; openSettings(); },
+  reset0:function(){ RESET=false; openSettings(); },
+  reset2:function(){ S.steps={};S.srs={};S.q=[];S.env={};save(); RESET=false; UI.day=curDay(); UI.open=firstOpen(UI.day); closeSheet(); toast('İlerleme sıfırlandı'); },
+  close:function(){ closeSheet(); }
+};
+document.addEventListener('click',function(e){ var t=e.target.closest('[data-act]'); if(!t||t.disabled) return; var f=ACT[t.dataset.act]; if(f) f(t.dataset,t); });
+document.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.id==='cs'){ var l=$('#cl'); if(l) l.innerHTML=cardList(t.value); }
+  if(t.id==='rt'){ S.settings.rate=Number(t.value); var v=$('#rtv'); if(v) v.textContent=S.settings.rate.toFixed(2)+'×'; save(); }
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='sd'&&/^\d{4}-\d{2}-\d{2}$/.test(t.value)){ S.start=t.value; save(); UI.day=curDay(); UI.open=firstOpen(UI.day); toast('Başlangıç tarihi güncellendi'); }
+  if(t.id==='okc'){ S.settings.ok=t.checked; save(); }
+});
+document.addEventListener('visibilitychange',function(){ if(document.hidden&&F.run) flowStop(); });
+
+load();
+UI.day=curDay(); UI.open=firstOpen(UI.day);
+render();
+initRemote();
+})();
+
+
+</script>
+
+<script>if("serviceWorker"in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script>
+</body></html>
