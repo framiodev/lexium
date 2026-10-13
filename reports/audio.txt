@@ -5,26 +5,26 @@ Collecting numpy
 Collecting sherpa-onnx-core==1.13.8 (from sherpa-onnx)
   Downloading sherpa_onnx_core-1.13.8-py3-none-manylinux2014_x86_64.whl.metadata (628 bytes)
 Downloading sherpa_onnx-1.13.8-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.4 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 45.5 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 41.6 MB/s  0:00:00
 Downloading sherpa_onnx_core-1.13.8-py3-none-manylinux2014_x86_64.whl (10.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 75.7 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 101.4 MB/s  0:00:00
 Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.9 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 114.9 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 36.0 MB/s  0:00:00
 Installing collected packages: sherpa-onnx-core, sherpa-onnx, numpy
 
 Successfully installed numpy-2.4.6 sherpa-onnx-1.13.8 sherpa-onnx-core-1.13.8
 metin sayisi 908
 indiriliyor vits-piper-tr_TR-dfki-medium
-TR ses vits-piper-tr_TR-dfki-medium: F0 ~ 106 Hz
+TR ses vits-piper-tr_TR-dfki-medium: F0 ~ 108 Hz
 indiriliyor vits-piper-tr_TR-fahrettin-medium
-TR ses vits-piper-tr_TR-fahrettin-medium: F0 ~ 105 Hz
+TR ses vits-piper-tr_TR-fahrettin-medium: F0 ~ 106 Hz
 indiriliyor vits-piper-tr_TR-fettah-medium
-TR ses vits-piper-tr_TR-fettah-medium: F0 ~ 188 Hz
+TR ses vits-piper-tr_TR-fettah-medium: F0 ~ 189 Hz
 TR kadın: vits-piper-tr_TR-fettah-medium TR erkek: vits-piper-tr_TR-fahrettin-medium
 indiriliyor vits-piper-en_US-amy-medium
 indiriliyor vits-piper-en_US-ryan-medium
-EN f F0 ~ 193 Hz
-EN m F0 ~ 176 Hz
+EN f F0 ~ 195 Hz
+EN m F0 ~ 170 Hz
 üretilen: 0, toplam metin: 908, indekste: 908
 MB: 14.505641
 0
