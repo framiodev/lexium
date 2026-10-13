@@ -1,0 +1,31 @@
+name: Ses denemesi
+on: workflow_dispatch
+permissions: {contents: write}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: XTTS-v2
+        continue-on-error: true
+        run: |
+          python -m venv vx && . vx/bin/activate
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q coqui-tts
+          python tools/ses_test.py xtts 2>&1 | tee xtts.log
+      - name: Chatterbox
+        continue-on-error: true
+        run: |
+          python -m venv vc && . vc/bin/activate
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q chatterbox-tts
+          python tools/ses_test.py chatterbox 2>&1 | tee chatterbox.log
+      - name: Sonuçları repoya yaz
+        if: always()
+        run: |
+          mkdir -p reports; (echo XTTS; tail -n 25 xtts.log; echo; echo CHATTERBOX; tail -n 25 chatterbox.log) > reports/ses_test.txt 2>&1 || true
+          git config user.name build-bot && git config user.email bot@users.noreply.github.com
+          git add -A www/test-audio reports && (git commit -qm "ses denemesi" && git pull -q --rebase && git push) || true

@@ -1,0 +1,9 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ses denemesi</title>
+<style>body{font:16px system-ui;margin:0;padding:16px;background:#0B0E13;color:#eee}h2{margin-top:28px}p{margin:14px 0 4px}audio{width:100%}</style></head><body>
+<h1>Ses denemesi</h1><div id="o">Yükleniyor...</div>
+<script>
+var T={en:["Good morning! My name is Anna, and I am from Istanbul.","Could you tell me how to get to the train station, please?"],tr:["Günaydın! Benim adım Ayşe, İstanbul'danım.","Bu hafta sonu arkadaşlarımla sinemaya gideceğim."]};
+var E={xtts:["f1","f2","m1","m2"],chatterbox:["default"]},h='';
+for(var e in E){h+='<h2>'+e+'</h2>';E[e].forEach(function(v){['tr','en'].forEach(function(l){T[l].forEach(function(t,i){h+='<p>'+e+' · '+v+' · '+l.toUpperCase()+': '+t+'</p><audio controls preload="none" src="test-audio/'+e+'/'+l+'-'+v+'-'+i+'.wav"></audio>';});});});}
+document.getElementById('o').innerHTML=h;
+</script></body></html>
